@@ -1,0 +1,574 @@
+===================================================Joins=========================================================
+Join is used to receive data from multiple tables or by using joins we can combine records from multiple tables.
+
+Types of Joins
+_______________
+
+1. Inner Join => Here we need to apply joining condition on the common data from both table. If ambiguity is there in column 
+name(both table having the same col name) then we need to use alias support. This inner joins return the matching record from 
+the database tables based on common column.
+
+mysql> select * from dept INNER JOIN employee ON dept.did = employee.deptid;
+
++-----+-----------+----------+-----+---------+----------+---------+--------+
+| did | dname     | location | eid | ename   | eaddress | esalary | deptid |
++-----+-----------+----------+-----+---------+----------+---------+--------+
+|  12 | Sales     | noida    |   1 | rishabh | lucknow  |   60000 |     12 |
+|  13 | Marketing | delhi    |   2 | mansi   | noida    |   80000 |     13 |
+|  14 | Accounts  | lucknow  |   3 | kapil   | delhi    |   50000 |     14 |
+|  13 | Marketing | delhi    |   4 | deepak  | haridwar |   50000 |     13 |
+|  14 | Accounts  | lucknow  |   5 | richa   | banglore |   50000 |     14 |
+|  13 | Marketing | delhi    |   6 | vivek   | pune     |  100000 |     13 |
+|  13 | Marketing | delhi    |   7 | vivek   | indor    |   70000 |     13 |
++-----+-----------+----------+-----+---------+----------+---------+--------+
+7 rows in set (0.00 sec)
+
+mysql> select * from dept INNER JOIN employee ON dept.did = employee.deptid AND dept.dname = 'Marketing';
+
++-----+-----------+----------+-----+--------+----------+---------+--------+
+| did | dname     | location | eid | ename  | eaddress | esalary | deptid |
++-----+-----------+----------+-----+--------+----------+---------+--------+
+|  13 | Marketing | delhi    |   2 | mansi  | noida    |   80000 |     13 |
+|  13 | Marketing | delhi    |   4 | deepak | haridwar |   50000 |     13 |
+|  13 | Marketing | delhi    |   6 | vivek  | pune     |  100000 |     13 |
+|  13 | Marketing | delhi    |   7 | vivek  | indor    |   70000 |     13 |
++-----+-----------+----------+-----+--------+----------+---------+--------+
+4 rows in set (0.05 sec)
+
+mysql> select dname,eid,ename,eaddress from dept INNER JOIN employee ON dept.did = employee.deptid AND dept.dname = 'Marketing';
+
++-----------+-----+--------+----------+
+| dname     | eid | ename  | eaddress |
++-----------+-----+--------+----------+
+| Marketing |   2 | mansi  | noida    |
+| Marketing |   4 | deepak | haridwar |
+| Marketing |   6 | vivek  | pune     |
+| Marketing |   7 | vivek  | indor    |
++-----------+-----+--------+----------+
+4 rows in set (0.00 sec)
+
+Using alias support if same name are present in two or more tables
+-------------------------------------------------------------------
+
+mysql> select d.dname,e.eid,e.ename,e.eaddress from dept d INNER JOIN employee e ON d.did = e.deptid AND d.dname = 'Marketing';
+
++-----------+-----+--------+----------+
+| dname     | eid | ename  | eaddress |
++-----------+-----+--------+----------+
+| Marketing |   2 | mansi  | noida    |
+| Marketing |   4 | deepak | haridwar |
+| Marketing |   6 | vivek  | pune     |
+| Marketing |   7 | vivek  | indor    |
++-----------+-----+--------+----------+
+4 rows in set (0.00 sec)
+
+Another Syntax of INNER JOIN (without using INNER JOIN command) (old way)
+--------------------------------------------------------------------------
+
+mysql> select d.dname,e.eid,e.ename,e.eaddress from dept d,employee e where d.did = e.deptid AND d.dname = 'Marketing';
++-----------+-----+--------+----------+
+| dname     | eid | ename  | eaddress |
++-----------+-----+--------+----------+
+| Marketing |   2 | mansi  | noida    |
+| Marketing |   4 | deepak | haridwar |
+| Marketing |   6 | vivek  | pune     |
+| Marketing |   7 | vivek  | indor    |
++-----------+-----+--------+----------+
+4 rows in set (0.00 sec)
+
+2. Outer Join 
+	2(a) Left Outer Join => To get the unmatched records from the left table use left outer join (it shows the details of left table and null value for the right table.
+
+mysql> select d.dname,e.eid,e.ename,e.eaddress from dept d LEFT OUTER JOIN employee e ON d.did = e.deptid;
+
++-------------+------+---------+----------+
+| dname       | eid  | ename   | eaddress |
++-------------+------+---------+----------+
+| Sales       |    1 | rishabh | lucknow  |
+| Marketing   |    2 | mansi   | noida    |
+| Marketing   |    4 | deepak  | haridwar |
+| Marketing   |    6 | vivek   | pune     |
+| Marketing   |    7 | vivek   | indor    |
+| Accounts    |    3 | kapil   | delhi    |
+| Accounts    |    5 | richa   | banglore |
+| Development | NULL | NULL    | NULL     |
++-------------+------+---------+----------+
+8 rows in set (0.00 sec)
+
+	2(b) Right Outer Join => To get the unmatched records from the right table use right outer join (it shows the details of right table and null value for the left table.
+
+mysql> select d.did,d.dname,e.eid,e.ename,e.eaddress from dept d RIGHT OUTER JOIN employee e ON d.did = e.deptid;
+
++------+-----------+-----+---------+----------+
+| did  | dname     | eid | ename   | eaddress |
++------+-----------+-----+---------+----------+
+|   12 | Sales     |   1 | rishabh | lucknow  |
+|   13 | Marketing |   2 | mansi   | noida    |
+|   14 | Accounts  |   3 | kapil   | delhi    |
+|   13 | Marketing |   4 | deepak  | haridwar |
+|   14 | Accounts  |   5 | richa   | banglore |
+|   13 | Marketing |   6 | vivek   | pune     |
+|   13 | Marketing |   7 | vivek   | indor    |
+| NULL | NULL      |   8 | Moon    | Lucknow  |
+| NULL | NULL      |   9 | Happy   | Delhi    |
++------+-----------+-----+---------+----------+
+9 rows in set (0.00 sec)
+
+	2(c) Full Outer Join => It is a combination of LEFT OUTER JOIN and RIGHT OUTER JOIN. It display the null values both side for all the unmatched records.
+	
+	Note : FULL OUTER JOIN is not supported by the mysql Database. In order to use FULL OUTER JOIN in mysql, then we should use union of LEFT JOIN and RIGHT JOIN.
+
+mysql> select d.dname,e.eid,e.ename,e.eaddress from dept d LEFT OUTER JOIN employee e ON d.did = e.deptid UNION select d.dname,e.eid,e.ename,e.eaddress from dept d RIGHT OUTER JOIN employee e ON d.did = e.deptid;
+
++-------------+------+---------+----------+
+| dname       | eid  | ename   | eaddress |
++-------------+------+---------+----------+
+| Sales       |    1 | rishabh | lucknow  |
+| Marketing   |    2 | mansi   | noida    |
+| Marketing   |    4 | deepak  | haridwar |
+| Marketing   |    6 | vivek   | pune     |
+| Marketing   |    7 | vivek   | indor    |
+| Accounts    |    3 | kapil   | delhi    |
+| Accounts    |    5 | richa   | banglore |
+| Development | NULL | NULL    | NULL     |
+| NULL        |    8 | Moon    | Lucknow  |
+| NULL        |    9 | Happy   | Delhi    |
++-------------+------+---------+----------+
+10 rows in set (0.13 sec)
+
+3. Self Join => Here we use joining a table to itself. Here Joining condition column must belongs to same datatype.
+
+Note : If we want to compare two table same column value then we use INNER JOIN whereas if we want to compare two different column values within a single table then we must use
+	self join.
+
+**Whenever a table contains hirarical data then only we allow to use self join.
+
+for eg : employee-manager, student-monitor
+
+When we use self join, we must take the support of alias.
+
+create table officeemployee(
+	eid int primary key,
+	ename varchar(12),
+	salary int,
+	manager int
+);
+
+mysql> insert into officeemployee values(101,'Ram',80000,null);		// Ram does not have any manager
+Query OK, 1 row affected (0.13 sec)
+
+mysql> insert into officeemployee values(102,'Shyam',60000,101);		// Shyam manager is Ram
+Query OK, 1 row affected (0.25 sec)
+
+mysql> insert into officeemployee values(103,'Sita',50000,101);		// Sita manager is Ram
+Query OK, 1 row affected (0.10 sec)
+
+mysql> insert into officeemployee values(104,'Gita',40000,103);		// Gita manager is Sita
+Query OK, 1 row affected (0.11 sec)
+
+mysql> select * from officeemployee;
++-----+-------+--------+---------+
+| eid | ename | salary | manager |
++-----+-------+--------+---------+
+| 101 | Ram   |  80000 |    NULL |
+| 102 | Shyam |  60000 |     101 |
+| 103 | Sita  |  50000 |     101 |
+| 104 | Gita  |  40000 |     103 |
++-----+-------+--------+---------+
+4 rows in set (0.00 sec)
+
+mysql> select e1.ename EMPLOYEE, e2.ename MANAGER from officeemployee e1,officeemployee e2 where e1.manager = e2.eid;
+
++----------+---------+
+| EMPLOYEE | MANAGER |
++----------+---------+
+| Shyam    | Ram     |
+| Sita     | Ram     |
+| Gita     | Sita    |
++----------+---------+
+3 rows in set (0.00 sec)
+
+4. Cross Join (Cartesion Product) => When we try to get the data from more than one table without joining condition, then it is
+called cross join, in this case every record of the first table will be mapped with every record of the second table.
+
+Note : With the Cross Join we don't get the meaningfull data, in order to get the meaningfull data we need to use other types of joins.
+
+mysql> select * from dept,employee;
++-----+-----------+----------+-----+---------+----------+---------+--------+
+| did | dname     | location | eid | ename   | eaddress | esalary | deptid |
++-----+-----------+----------+-----+---------+----------+---------+--------+
+|  14 | Accounts  | lucknow  |   1 | rishabh | lucknow  |   60000 |     12 |
+|  13 | Marketing | delhi    |   1 | rishabh | lucknow  |   60000 |     12 |
+|  12 | Sales     | noida    |   1 | rishabh | lucknow  |   60000 |     12 |
+|  14 | Accounts  | lucknow  |   2 | mansi   | noida    |   80000 |     13 |
+|  13 | Marketing | delhi    |   2 | mansi   | noida    |   80000 |     13 |
+|  12 | Sales     | noida    |   2 | mansi   | noida    |   80000 |     13 |
+|  14 | Accounts  | lucknow  |   3 | kapil   | delhi    |   50000 |     14 |
+|  13 | Marketing | delhi    |   3 | kapil   | delhi    |   50000 |     14 |
+|  12 | Sales     | noida    |   3 | kapil   | delhi    |   50000 |     14 |
+|  14 | Accounts  | lucknow  |   4 | deepak  | haridwar |   50000 |     13 |
+|  13 | Marketing | delhi    |   4 | deepak  | haridwar |   50000 |     13 |
+|  12 | Sales     | noida    |   4 | deepak  | haridwar |   50000 |     13 |
+|  14 | Accounts  | lucknow  |   5 | richa   | banglore |   50000 |     14 |
+|  13 | Marketing | delhi    |   5 | richa   | banglore |   50000 |     14 |
+|  12 | Sales     | noida    |   5 | richa   | banglore |   50000 |     14 |
+|  14 | Accounts  | lucknow  |   6 | vivek   | pune     |  100000 |     13 |
+|  13 | Marketing | delhi    |   6 | vivek   | pune     |  100000 |     13 |
+|  12 | Sales     | noida    |   6 | vivek   | pune     |  100000 |     13 |
+|  14 | Accounts  | lucknow  |   7 | vivek   | indor    |   70000 |     13 |
+|  13 | Marketing | delhi    |   7 | vivek   | indor    |   70000 |     13 |
+|  12 | Sales     | noida    |   7 | vivek   | indor    |   70000 |     13 |
++-----+-----------+----------+-----+---------+----------+---------+--------+
+21 rows in set (0.00 sec)
+
+====================================================Subqueries=======================================================================
+
+A query inside another query is called subquery or nested query. SubQueries are used to retrieve the data from single or multiple tables
+based on more than one step process. Here outer query is called parent query and inner query is called child query. child query will
+execute first then only parent query will be executed.
+
+child query - It provides values/data to the parent query.
+==============
+
+parent query - It recieves the values/data from the child query.
+==============
+
+Note : Group by clause can be used in both queries
+
+Subqueries we can categories into following categories.
+========================================================
+
+1. Single row and single column subquery (Scalar value subquery)
+
+2. Multiple row single column subquery
+
+3. Multiple column subquery
+
+1. Single row and single column subquery (Scalar value subquery)
+_________________________________________________________________
+
+Here Child query will return only a single value. Here mostly same column name which is in the where clause of the parent query, will be
+there inside the select clause of child query.
+
+------------------------Write a query to display employee details who is working in marketing department------------------------------ 
+
+Using Join
+==========
+
+mysql> select eid,ename,eaddress from dept INNER JOIN employee ON dept.did = employee.deptid AND dname = 'Marketing';
++-----+--------+----------+
+| eid | ename  | eaddress |
++-----+--------+----------+
+|   2 | mansi  | noida    |
+|   4 | deepak | haridwar |
+|   6 | vivek  | pune     |
+|   7 | vivek  | indor    |
++-----+--------+----------+
+4 rows in set (0.00 sec)
+
+Using Subqueries
+=================
+
+mysql> select eid,ename,eaddress from employee where deptid = (select did from dept where dname = 'marketing');
+
++-----+--------+----------+
+| eid | ename  | eaddress |
++-----+--------+----------+
+|   2 | mansi  | noida    |
+|   4 | deepak | haridwar |
+|   6 | vivek  | pune     |
+|   7 | vivek  | indor    |
++-----+--------+----------+
+4 rows in set (0.00 sec)
+
+------------------------Write a query to display employee details who is working with 'mansi'------------------------------ 
+
+mysql> select * from employee where deptid = (select deptid from employee where ename = 'mansi');
++-----+--------+----------+---------+--------+
+| eid | ename  | eaddress | esalary | deptid |
++-----+--------+----------+---------+--------+
+|   2 | mansi  | noida    |   80000 |     13 |
+|   4 | deepak | haridwar |   50000 |     13 |
+|   6 | vivek  | pune     |  100000 |     13 |
+|   7 | vivek  | indor    |   70000 |     13 |
++-----+--------+----------+---------+--------+
+4 rows in set (0.00 sec)
+
+-----------Write a query to display employee details who are getting more salary than average salary from employee table----------
+
+mysql> select * from employee where esalary > (select avg(esalary) from employee);
+
++-----+-------+----------+---------+--------+
+| eid | ename | eaddress | esalary | deptid |
++-----+-------+----------+---------+--------+
+|   2 | mansi | noida    |   80000 |     13 |
+|   6 | vivek | pune     |  100000 |     13 |
+|   7 | vivek | indor    |   70000 |     13 |
++-----+-------+----------+---------+--------+
+3 rows in set (0.16 sec)
+
+------------------------------Write a query to display first highest salary of employee------------------------------
+
+mysql> select * from employee where esalary = (select max(esalary) from employee);
++-----+-------+----------+---------+--------+
+| eid | ename | eaddress | esalary | deptid |
++-----+-------+----------+---------+--------+
+|   6 | vivek | pune     |  100000 |     13 |
++-----+-------+----------+---------+--------+
+1 row in set (0.00 sec)
+
+------------------------------Write a query to display second highest salary of employee------------------------------
+
+mysql> select * from employee where esalary = (select max(esalary) from employee where esalary < (select max(esalary) from employee));
++-----+-------+----------+---------+--------+
+| eid | ename | eaddress | esalary | deptid |
++-----+-------+----------+---------+--------+
+|   2 | mansi | noida    |   80000 |     13 |
++-----+-------+----------+---------+--------+
+1 row in set (0.09 sec)
+
+------------------------------Write a query to display details of employee who is working under 'ram'------------------------------
+
+mysql> select * from officeemployee where manager = (select eid from officeemployee where ename = 'ram');
++-----+-------+--------+---------+
+| eid | ename | salary | manager |
++-----+-------+--------+---------+
+| 102 | Shyam |  60000 |     101 |
+| 103 | Sita  |  50000 |     101 |
++-----+-------+--------+---------+
+2 rows in set (0.00 sec)
+
+2. Multiple row single column subquery
+_________________________________________
+
+In Multi-row, single column subquery will return multiple rows and single column to the parent query.
+
+In this case in parent query we should use one of the following operators
+--------------------------------------------------------------------------
+
+IN : It check equal to any number in the list (Using OR)
+ANY : It compare any value in the subquery returned list
+ALL : It compares all values in the subquery returned list
+
+=====================IN==========================
+
+mysql> select esalary from employee where eid>5;	
++---------+
+| esalary |
++---------+
+|  100000 |
+|   70000 |
+|   50000 |
+|   60000 |
++---------+
+4 rows in set (0.00 sec)
+
+mysql> select * from employee where esalary IN (select esalary from employee where eid > 5);
++-----+---------+----------+---------+--------+
+| eid | ename   | eaddress | esalary | deptid |
++-----+---------+----------+---------+--------+
+|   1 | rishabh | lucknow  |   60000 |     12 |
+|   3 | kapil   | delhi    |   50000 |     14 |
+|   4 | deepak  | haridwar |   50000 |     13 |
+|   5 | richa   | banglore |   50000 |     14 |
+|   6 | vivek   | pune     |  100000 |     13 |
+|   7 | vivek   | indor    |   70000 |     13 |
+|   8 | Moon    | Lucknow  |   50000 |   NULL |
+|   9 | Happy   | Delhi    |   60000 |   NULL |
++-----+---------+----------+---------+--------+
+8 rows in set (0.00 sec)
+
+=====================ANY==========================
+
+salary>any(----) - here it checks salary should be greater than any of 4 values in the list.
+salary>all(----) - here it checks salary should be grater than all of 4 values in the list.
+
+<ANY() : less than any - less than maximum
+>ANY() : greater than any - greater than equal to minimum
+=ANY() : equal to any - it is equal to IN operator
+
+=====================ALL==========================
+
+<ALL() : less than all - less than minimum
+>ALL() : greater than all - greater than maximum
+=ALL() : equal to all - it is meaningless because one value can not be equal to 3 or 4 values
+
+-----------------Write a query to display the employee who is getting maximum salary in each department---------------------
+
+mysql> select * from employee where esalary IN(select max(esalary) from employee group by deptid);
++-----+---------+----------+---------+--------+
+| eid | ename   | eaddress | esalary | deptid |
++-----+---------+----------+---------+--------+
+|   1 | rishabh | lucknow  |   60000 |     12 |
+|   3 | kapil   | delhi    |   50000 |     14 |
+|   4 | deepak  | haridwar |   50000 |     13 |
+|   5 | richa   | banglore |   50000 |     14 |
+|   6 | vivek   | pune     |  100000 |     13 |
+|   8 | Moon    | Lucknow  |   50000 |   NULL |
+|   9 | Happy   | Delhi    |   60000 |   NULL |
++-----+---------+----------+---------+--------+
+7 rows in set (0.00 sec)
+
+3. Multiple column subquery
+_____________________________
+
+If we try to compare multiple column values of the child query with the multiple column values of the parent query then we use this type of Subquery
+
+Syntax
+========
+
+select * from table where (col1,col2,..) IN (select col1,col2..from table where condition)
+
+-------------Write a query to display the employee whose salary and did matches with the salary and did of 'kapil'-----------------
+
+mysql> select * from employee where (esalary,deptid) IN (select esalary,deptid from employee where ename='kapil');
+
++-----+-------+----------+---------+--------+
+| eid | ename | eaddress | esalary | deptid |
++-----+-------+----------+---------+--------+
+|   3 | kapil | delhi    |   50000 |     14 |
+|   5 | richa | banglore |   50000 |     14 |
++-----+-------+----------+---------+--------+
+2 rows in set (0.12 sec)
+
+==============================Subqueries in DML (Insert, Update, Delete)=======================================
+
+Subquery in insert
+-------------------
+
+create table newtablecopy(
+	id int,
+	name varchar(12)
+);
+
+mysql> insert into newtablecopy(select eid,ename from employee);
+Query OK, 9 rows affected (0.35 sec)
+Records: 9  Duplicates: 0  Warnings: 0
+
+mysql> select * from newtablecopy;
++------+---------+
+| id   | name    |
++------+---------+
+|    1 | rishabh |
+|    2 | mansi   |
+|    3 | kapil   |
+|    4 | deepak  |
+|    5 | richa   |
+|    6 | vivek   |
+|    7 | vivek   |
+|    8 | Moon    |
+|    9 | Happy   |
++------+---------+
+9 rows in set (0.00 sec)
+
+			or
+
+mysql> insert into newtablecopy values(10,(select ename from employee where eid = 8));
+Query OK, 1 row affected (0.17 sec)
+
+mysql> select * from newtablecopy;
++------+---------+
+| id   | name    |
++------+---------+
+|    1 | rishabh |
+|    2 | mansi   |
+|    3 | kapil   |
+|    4 | deepak  |
+|    5 | richa   |
+|    6 | vivek   |
+|    7 | vivek   |
+|    8 | Moon    |
+|    9 | Happy   |
+|   10 | Moon    |
++------+---------+
+10 rows in set (0.00 sec)
+
+Subquery in update
+-------------------
+
+Here Subquery is allowed inside WHERE clause or SET clause.
+
+mysql> update newtablecopy set name = 'ramesh' where id = (select eid from employee where ename = 'richa');
+
+mysql> update newtablecopy set name = (select ename from employee where eid = 10) where id = (select eid from employee where ename = 'kapil');
+
+Subquery in delete
+-------------------
+
+mysql> delete from newtablecopy where id = (select eid from emp where ename = 'Happy');
+
+==================================Auto Increment ======================================
+
+This is for auto generate the ID field. MySQL support the auto_increment where as ORACLE DB use sequence concept to generate the
+ID field automatically.
+
+create table stdnt(
+	roll int primary key auto_increment,
+	name varchar(12),
+	marks int
+);
+
+mysql> insert into stdnt(name,marks) values('Rishabh',999);
+Query OK, 1 row affected (0.15 sec)
+
+mysql> insert into stdnt values(100,'Mansi',980);
+Query OK, 1 row affected (0.15 sec)
+
+mysql> insert into stdnt(name,marks) values('Kapil',800);
+Query OK, 1 row affected (0.12 sec)
+
+mysql> select * from stdnt;
++------+---------+-------+
+| roll | name    | marks |
++------+---------+-------+
+|    1 | Rishabh |   999 |
+|  100 | Mansi   |   980 |
+|  101 | Kapil   |   800 |
++------+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> alter table stdnt auto_increment = 1001;
+Query OK, 0 rows affected (0.19 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> insert into stdnt(name,marks) values('Deepak',840);
+Query OK, 1 row affected (0.13 sec)
+
+mysql> select * from stdnt;
++------+---------+-------+
+| roll | name    | marks |
++------+---------+-------+
+|    1 | Rishabh |   999 |
+|  100 | Mansi   |   980 |
+|  101 | Kapil   |   800 |
+| 1001 | Deepak  |   840 |
++------+---------+-------+
+4 rows in set (0.00 sec)
+
+==========================LIMIT===========================================================
+
+---------------Write a query to get 4 highest salary paid employee--------------------
+
+mysql> select * from employee Order by esalary desc LIMIT 4;
++-----+---------+----------+---------+--------+
+| eid | ename   | eaddress | esalary | deptid |
++-----+---------+----------+---------+--------+
+|   6 | vivek   | pune     |  100000 |     13 |
+|   2 | mansi   | noida    |   80000 |     13 |
+|   7 | vivek   | indor    |   70000 |     13 |
+|   1 | rishabh | lucknow  |   60000 |     12 |
++-----+---------+----------+---------+--------+
+4 rows in set (0.00 sec)
+
+By using offset
+----------------
+
+mysql> select * from employee Order by esalary desc LIMIT 4,2;
+
++-----+-------+----------+---------+--------+
+| eid | ename | eaddress | esalary | deptid |
++-----+-------+----------+---------+--------+
+|   9 | Happy | Delhi    |   60000 |   NULL |
+|   3 | kapil | delhi    |   50000 |     14 |
++-----+-------+----------+---------+--------+
+2 rows in set (0.00 sec)

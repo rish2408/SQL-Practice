@@ -1,0 +1,658 @@
+=========================================================================
+1. Create the following table according to the following information
+=========================================================================
+
+i) Table name- DEPOSIT 
+
+FIELD NAME             DATA TYPE       SIZE
+ ACTNO                  VARCHAR         25 
+ CNAME                  VARCHAR         20 
+ BNAME                  VARCHAR         20 
+ AMOUNT                 INT 
+ ADATE                  DATE 
+
+ii) Table name-BRANCH 
+
+FIELD NAME             DATA TYPE        SIZE 
+ BNAME                 VARCHAR           20 
+ CITY                  VARCHAR           20 
+
+iii) Table name-CUSTOMER
+
+FIELD NAME             DATA TYPE        SIZE 
+ CNAME                 VARCHAR2          20 
+ CITY                  VARCHAR2          20 
+
+iv) Table name-BORROW 
+
+FIELD NAME             DATA TYPE        SIZE
+ LOANNO                VARCHAR           5 
+ CNAME                 VARCHAR           20 
+ BNAME                 VARCHAR           20 
+ AMOUNT                INT
+
+mysql> create table deposit(
+    -> actno varchar(25),
+    -> cname varchar(20),
+    -> bname varchar(20),
+    -> amount int,
+    -> adate date
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> create table branch(
+    -> bname varchar(20),
+    -> city varchar(20)
+    -> );
+Query OK, 0 rows affected (0.25 sec)
+
+mysql> create table customer(
+    -> cname varchar(20),
+    -> city varchar(20)
+    -> );
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> create table borrow(
+    -> loanno varchar(5),
+    -> cname varchar(20),
+    -> bname varchar(20),
+    -> amount int
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+=========================================================================
+2. Describe the tables which are already created.
+=========================================================================
+
+mysql> desc deposit;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| actno  | varchar(25) | YES  |     | NULL    |       |
+| cname  | varchar(20) | YES  |     | NULL    |       |
+| bname  | varchar(20) | YES  |     | NULL    |       |
+| amount | int         | YES  |     | NULL    |       |
+| adate  | date        | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+5 rows in set (0.07 sec)
+
+mysql> desc branch;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| bname | varchar(20) | YES  |     | NULL    |       |
+| city  | varchar(20) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> desc customer;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| cname | varchar(20) | YES  |     | NULL    |       |
+| city  | varchar(20) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> desc borrow;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| loanno | varchar(5)  | YES  |     | NULL    |       |
+| cname  | varchar(20) | YES  |     | NULL    |       |
+| bname  | varchar(20) | YES  |     | NULL    |       |
+| amount | int         | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+=========================================================================
+3. Insert the data as for the following
+=========================================================================
+
+mysql> insert into deposit values('100','ANIL','VRCE',1000.00,'1995-03-01');
+Query OK, 1 row affected (0.19 sec)
+
+mysql> insert into deposit values('101','SUNIL','MGROAD',5000.00,'1996-01-04');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into deposit values('102','RAHUL','KAROLBAGH',3500.00,'1995-11-17');
+Query OK, 1 row affected (0.17 sec)
+
+mysql> insert into deposit values('103','MADHURI','CHANDNI',1200.00,'1995-12-17');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into deposit values('104','PRAMOD','MGROAD',3000.00,'1996-03-27');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into deposit values('105','SANDIP','KAROLBAGH',2000.00,'1996-03-31');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from deposit;
++-------+---------+-----------+--------+------------+
+| actno | cname   | bname     | amount | adate      |
++-------+---------+-----------+--------+------------+
+| 100   | ANIL    | VRCE      |   1000 | 1995-03-01 |
+| 101   | SUNIL   | MGROAD    |   5000 | 1996-01-04 |
+| 102   | RAHUL   | KAROLBAGH |   3500 | 1995-11-17 |
+| 103   | MADHURI | CHANDNI   |   1200 | 1995-12-17 |
+| 104   | PRAMOD  | MGROAD    |   3000 | 1996-03-27 |
+| 105   | SANDIP  | KAROLBAGH |   2000 | 1996-03-31 |
++-------+---------+-----------+--------+------------+
+6 rows in set (0.00 sec)
+
+mysql> insert into branch values('VRCE','NAGPUR');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into branch values('KAROLBAGH','DELHI');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into branch values('CHANDNI','DELHI');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into branch values('MGROAD','BANGLORE');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> select * from branch;
++-----------+----------+
+| bname     | city     |
++-----------+----------+
+| VRCE      | NAGPUR   |
+| KAROLBAGH | DELHI    |
+| CHANDNI   | DELHI    |
+| MGROAD    | BANGLORE |
++-----------+----------+
+4 rows in set (0.00 sec)
+
+mysql> insert into customer values('ANIL','CALCUTA');
+Query OK, 1 row affected (0.07 sec)
+
+mysql> insert into customer values('RAHUL','BARODA');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into customer values('MADHURI','NAGPUR');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into customer values('PRAMOD','NAGPUR');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into customer values('SUNIL','DELHI');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> select * from customer;
++---------+---------+
+| cname   | city    |
++---------+---------+
+| ANIL    | CALCUTA |
+| RAHUL   | BARODA  |
+| MADHURI | NAGPUR  |
+| PRAMOD  | NAGPUR  |
+| SUNIL   | DELHI   |
++---------+---------+
+5 rows in set (0.00 sec)
+
+mysql> insert into borrow values('201','ANIL','VRCE',1000.00);
+Query OK, 1 row affected (0.15 sec)
+
+mysql> insert into borrow values('206','RAHUL','KAROLBAGH',5000.00);
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into borrow values('311','SUNIL','MGROAD',3000.00);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into borrow values('321','MADHURI','CHANDNI',2000.00);
+Query OK, 1 row affected (0.13 sec)
+
+mysql> insert into borrow values('375','PRAMOD','MGROAD',8000.00);
+Query OK, 1 row affected (0.11 sec)
+
+mysql> select * from borrow;
++--------+---------+-----------+--------+
+| loanno | cname   | bname     | amount |
++--------+---------+-----------+--------+
+| 201    | ANIL    | VRCE      |   1000 |
+| 206    | RAHUL   | KAROLBAGH |   5000 |
+| 311    | SUNIL   | MGROAD    |   3000 |
+| 321    | MADHURI | CHANDNI   |   2000 |
+| 375    | PRAMOD  | MGROAD    |   8000 |
++--------+---------+-----------+--------+
+5 rows in set (0.00 sec)
+
+4.Retrieve all the records from the table BORROW  where amount in between 2000 and 3000
+
+mysql> select * from borrow where amount>=2000 and amount<=3000;
++--------+---------+---------+--------+
+| loanno | cname   | bname   | amount |
++--------+---------+---------+--------+
+| 311    | SUNIL   | MGROAD  |   3000 |
+| 321    | MADHURI | CHANDNI |   2000 |
++--------+---------+---------+--------+
+2 rows in set (0.00 sec)
+
+						or
+
+mysql> select * from borrow where amount between 2000 and 3000;
++--------+---------+---------+--------+
+| loanno | cname   | bname   | amount |
++--------+---------+---------+--------+
+| 311    | SUNIL   | MGROAD  |   3000 |
+| 321    | MADHURI | CHANDNI |   2000 |
++--------+---------+---------+--------+
+2 rows in set (0.00 sec)
+
+5. Retrieve the details from the table DEPOSIT
+
+mysql> select * from deposit;
++-------+---------+-----------+--------+------------+
+| actno | cname   | bname     | amount | adate      |
++-------+---------+-----------+--------+------------+
+| 100   | ANIL    | VRCE      |   1000 | 1995-03-01 |
+| 101   | SUNIL   | MGROAD    |   5000 | 1996-01-04 |
+| 102   | RAHUL   | KAROLBAGH |   3500 | 1995-11-17 |
+| 103   | MADHURI | CHANDNI   |   1200 | 1995-12-17 |
+| 104   | PRAMOD  | MGROAD    |   3000 | 1996-03-27 |
+| 105   | SANDIP  | KAROLBAGH |   2000 | 1996-03-31 |
++-------+---------+-----------+--------+------------+
+6 rows in set (0.00 sec)
+
+6. Retrieve the customer name, account no of DEPOSIT
+
+mysql> select cname,actno from deposit;
++---------+-------+
+| cname   | actno |
++---------+-------+
+| ANIL    | 100   |
+| SUNIL   | 101   |
+| RAHUL   | 102   |
+| MADHURI | 103   |
+| PRAMOD  | 104   |
+| SANDIP  | 105   |
++---------+-------+
+6 rows in set (0.00 sec)
+
+7. Retrieve the name of the customer living in NAGPUR
+
+mysql> select cname from customer where city = 'NAGPUR';
++---------+
+| cname   |
++---------+
+| MADHURI |
+| PRAMOD  |
++---------+
+2 rows in set (0.00 sec)
+
+8. Retrieve the name of the customers who opened account after 17-NOV-95
+
+mysql> select cname from deposit where adate>'1995-11-17';
++---------+
+| cname   |
++---------+
+| SUNIL   |
+| MADHURI |
+| PRAMOD  |
+| SANDIP  |
++---------+
+4 rows in set (0.08 sec)
+
+9. Retrieve the account number and amount of the customer having account opened between 01-12-95 and 01-06.96
+
+mysql> select actno,amount from deposit where adate between '1995-12-01' and '1996-06-01';
++-------+--------+
+| actno | amount |
++-------+--------+
+| 101   |   5000 |
+| 103   |   1200 |
+| 104   |   3000 |
+| 105   |   2000 |
++-------+--------+
+4 rows in set (0.00 sec)
+
+10. Retrieve all the records from the table DEPOSIT where CNAME begins with C
+
+mysql> select * from deposit where cname like'C%';
+Empty set (0.00 sec)
+
+11. Retrieve all the records from the table BORROW  where 2nd character of CNAME is U.
+
+mysql> select * from borrow where cname like'_U%';
++--------+-------+--------+--------+
+| loanno | cname | bname  | amount |
++--------+-------+--------+--------+
+| 311    | SUNIL | MGROAD |   3000 |
++--------+-------+--------+--------+
+1 row in set (0.00 sec)
+
+12. Retrieve all the records from the table DEPOSIT where branch name is CHANDNI or MGROAD.
+
+mysql> select * from deposit where bname='CHANDNI' or bname='MGROAD';
++-------+---------+---------+--------+------------+
+| actno | cname   | bname   | amount | adate      |
++-------+---------+---------+--------+------------+
+| 101   | SUNIL   | MGROAD  |   5000 | 1996-01-04 |
+| 103   | MADHURI | CHANDNI |   1200 | 1995-12-17 |
+| 104   | PRAMOD  | MGROAD  |   3000 | 1996-03-27 |
++-------+---------+---------+--------+------------+
+3 rows in set (0.00 sec)
+
+						or
+
+mysql> select * from deposit where bname in('CHANDNI','MGROAD');
++-------+---------+---------+--------+------------+
+| actno | cname   | bname   | amount | adate      |
++-------+---------+---------+--------+------------+
+| 101   | SUNIL   | MGROAD  |   5000 | 1996-01-04 |
+| 103   | MADHURI | CHANDNI |   1200 | 1995-12-17 |
+| 104   | PRAMOD  | MGROAD  |   3000 | 1996-03-27 |
++-------+---------+---------+--------+------------+
+3 rows in set (0.00 sec)
+
+13. Retrieve all the records from the table DEPOSIT where branch name is not CHANDNI or MGROAD.
+
+mysql> select * from deposit where not bname='CHANDNI' and not bname='MGROAD';
++-------+--------+-----------+--------+------------+
+| actno | cname  | bname     | amount | adate      |
++-------+--------+-----------+--------+------------+
+| 100   | ANIL   | VRCE      |   1000 | 1995-03-01 |
+| 102   | RAHUL  | KAROLBAGH |   3500 | 1995-11-17 |
+| 105   | SANDIP | KAROLBAGH |   2000 | 1996-03-31 |
++-------+--------+-----------+--------+------------+
+3 rows in set (0.00 sec)
+
+						or
+
+mysql> select * from deposit where not bname in('CHANDNI','MGROAD');
++-------+--------+-----------+--------+------------+
+| actno | cname  | bname     | amount | adate      |
++-------+--------+-----------+--------+------------+
+| 100   | ANIL   | VRCE      |   1000 | 1995-03-01 |
+| 102   | RAHUL  | KAROLBAGH |   3500 | 1995-11-17 |
+| 105   | SANDIP | KAROLBAGH |   2000 | 1996-03-31 |
++-------+--------+-----------+--------+------------+
+3 rows in set (0.00 sec)
+
+14. Retrieve all the records from DEPOSIT where amount > 1000 and arrange the customer name in ascending order.
+
+mysql> select * from deposit where amount>1000 order by cname asc;
++-------+---------+-----------+--------+------------+
+| actno | cname   | bname     | amount | adate      |
++-------+---------+-----------+--------+------------+
+| 103   | MADHURI | CHANDNI   |   1200 | 1995-12-17 |
+| 104   | PRAMOD  | MGROAD    |   3000 | 1996-03-27 |
+| 102   | RAHUL   | KAROLBAGH |   3500 | 1995-11-17 |
+| 105   | SANDIP  | KAROLBAGH |   2000 | 1996-03-31 |
+| 101   | SUNIL   | MGROAD    |   5000 | 1996-01-04 |
++-------+---------+-----------+--------+------------+
+5 rows in set (0.00 sec)
+
+15. Retrieve all the records from DEPOSIT where amount > 1000 and arrange the customer name in descending order
+
+mysql> select * from deposit where amount>1000 order by cname desc;
++-------+---------+-----------+--------+------------+
+| actno | cname   | bname     | amount | adate      |
++-------+---------+-----------+--------+------------+
+| 101   | SUNIL   | MGROAD    |   5000 | 1996-01-04 |
+| 105   | SANDIP  | KAROLBAGH |   2000 | 1996-03-31 |
+| 102   | RAHUL   | KAROLBAGH |   3500 | 1995-11-17 |
+| 104   | PRAMOD  | MGROAD    |   3000 | 1996-03-27 |
+| 103   | MADHURI | CHANDNI   |   1200 | 1995-12-17 |
++-------+---------+-----------+--------+------------+
+5 rows in set (0.00 sec)
+
+16. Retrieve customer details from BORROW table where the third character of the customer name is either ‘A’ or ‘D’.
+
+mysql> select * from borrow where cname like'__A%' or cname like'__D%';
++--------+---------+---------+--------+
+| loanno | cname   | bname   | amount |
++--------+---------+---------+--------+
+| 321    | MADHURI | CHANDNI |   2000 |
+| 375    | PRAMOD  | MGROAD  |   8000 |
++--------+---------+---------+--------+
+2 rows in set (0.00 sec)
+
+17. Retrieve all the records from the table BORROW where amount is not between 2000 and 8000.
+
+mysql> select * from borrow where not amount between 2000 and 8000;
++--------+-------+-------+--------+
+| loanno | cname | bname | amount |
++--------+-------+-------+--------+
+| 201    | ANIL  | VRCE  |   1000 |
++--------+-------+-------+--------+
+1 row in set (0.00 sec)
+
+18. Find out the unique records from the table DEPOSIT
+
+mysql> select distinct actno,cname,bname,amount,adate from deposit;
++-------+---------+-----------+--------+------------+
+| actno | cname   | bname     | amount | adate      |
++-------+---------+-----------+--------+------------+
+| 100   | ANIL    | VRCE      |   1000 | 1995-03-01 |
+| 101   | SUNIL   | MGROAD    |   5000 | 1996-01-04 |
+| 102   | RAHUL   | KAROLBAGH |   3500 | 1995-11-17 |
+| 103   | MADHURI | CHANDNI   |   1200 | 1995-12-17 |
+| 104   | PRAMOD  | MGROAD    |   3000 | 1996-03-27 |
+| 105   | SANDIP  | KAROLBAGH |   2000 | 1996-03-31 |
++-------+---------+-----------+--------+------------+
+6 rows in set (0.00 sec)
+
+19. Update the amount of all depositors in deposit table by giving them 10% interest (i.e. amount=amount * 0.1) where branch is VRCE.
+
+mysql> select * from deposit;
++-------+---------+-----------+--------+------------+
+| actno | cname   | bname     | amount | adate      |
++-------+---------+-----------+--------+------------+
+| 100   | ANIL    | VRCE      |   1000 | 1995-03-01 |
+| 101   | SUNIL   | MGROAD    |   5000 | 1996-01-04 |
+| 102   | RAHUL   | KAROLBAGH |   3500 | 1995-11-17 |
+| 103   | MADHURI | CHANDNI   |   1200 | 1995-12-17 |
+| 104   | PRAMOD  | MGROAD    |   3000 | 1996-03-27 |
+| 105   | SANDIP  | KAROLBAGH |   2000 | 1996-03-31 |
++-------+---------+-----------+--------+------------+
+6 rows in set (0.00 sec)
+
+mysql> update DEPOSIT SET amount=amount+amount*0.1 where bname='VRCE';
+Query OK, 1 row affected (0.14 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from DEPOSIT;
++-------+---------+-----------+--------+------------+
+| actno | cname   | bname     | amount | adate      |
++-------+---------+-----------+--------+------------+
+| 100   | anil    | vrce      |   1100 | 1995-03-01 |
+| 101   | sunil   | mgroad    |   5000 | 1996-01-04 |
+| 102   | rahul   | karolbagh |   3500 | 1995-11-17 |
+| 103   | madhuri | chandni   |   1200 | 1995-12-17 |
+| 104   | pramod  | mgroad    |   3000 | 1996-03-27 |
+| 105   | sandip  | karolbagh |   2000 | 1996-03-31 |
++-------+---------+-----------+--------+------------+
+6 rows in set (0.00 sec)
+
+20. Update the amount of all depositors in deposit table by giving them 10% interest where branch is VRCE and customer name ANIL.
+
+mysql> update DEPOSIT SET amount=amount+amount*0.1 where bname='VRCE' AND cname='ANIL';
+Query OK, 1 row affected (0.20 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from DEPOSITE;
++-------+---------+-----------+--------+------------+
+| actno | cname   | bname     | amount | adate      |
++-------+---------+-----------+--------+------------+
+| 100   | anil    | vrce      |   1210 | 1995-03-01 |
+| 101   | sunil   | mgroad    |   5000 | 1996-01-04 |
+| 102   | rahul   | karolbagh |   3500 | 1995-11-17 |
+| 103   | madhuri | chandni   |   1200 | 1995-12-17 |
+| 104   | pramod  | mgroad    |   3000 | 1996-03-27 |
+| 105   | sandip  | karolbagh |   2000 | 1996-03-31 |
++-------+---------+-----------+--------+------------+
+6 rows in set (0.00 sec)
+
+=======================================================
+Q: Create table STUDENT and insert the following data :
+=======================================================
+
+FIELD           DATA TYPE 
+
+NAME           VARCHAR(20) 
+ROLLNO       	INT 
+BRANCH         VARCHAR(20) 
+CITY           VARCHAR(20)
+
+mysql> create table student(
+    	 name varchar(20),
+    	 rollno int,
+    	 branch varchar(20),
+    	 city varchar(20)
+    	 );
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> desc student;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| name   | varchar(20) | YES  |     | NULL    |       |
+| rollno | int         | YES  |     | NULL    |       |
+| branch | varchar(20) | YES  |     | NULL    |       |
+| city   | varchar(20) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> insert into student values('VIJAYA',150,'CSE','CHENNAI');
+Query OK, 1 row affected (0.61 sec)
+
+mysql> insert into student values('SITA',202,'ETC','KOLKATA');
+Query OK, 1 row affected (0.21 sec)
+
+mysql> insert into student values('RAVI',300,'EEE','DELHI');
+Query OK, 1 row affected (0.18 sec)
+
+mysql> insert into student values('BASU',165,'ETC','CHENNAI');
+Query OK, 1 row affected (0.10 sec)
+
+mysql> insert into student values('RASMI',107,'ETC','RKL');
+Query OK, 1 row affected (0.07 sec)
+
+mysql> insert into student values('KARAN',111,'CSE','CTC');
+Query OK, 1 row affected (0.11 sec)
+
+mysql> insert into student values('REKHA',117,'BME','BBSR');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> select * from student;
++--------+--------+--------+---------+
+| name   | rollno | branch | city    |
++--------+--------+--------+---------+
+| VIJAYA |    150 | CSE    | CHENNAI |
+| SITA   |    202 | ETC    | KOLKATA |
+| RAVI   |    300 | EEE    | DELHI   |
+| BASU   |    165 | ETC    | CHENNAI |
+| RASMI  |    107 | ETC    | RKL     |
+| KARAN  |    111 | CSE    | CTC     |
+| REKHA  |    117 | BME    | BBSR    |
++--------+--------+--------+---------+
+7 rows in set (0.00 sec)
+
+1. Count the number of students of each department.
+
+mysql> select branch,count(*) from student group by branch;
++--------+----------+
+| branch | count(*) |
++--------+----------+
+| CSE    |        2 |
+| ETC    |        3 |
+| EEE    |        1 |
+| BME    |        1 |
++--------+----------+
+4 rows in set (0.00 sec)
+
+2. Count the number of students of each department where the department name starts with ‘E’
+
+mysql> select branch,count(*) from student where branch like'e%' group by branch;
++--------+----------+
+| branch | count(*) |
++--------+----------+
+| ETC    |        3 |
+| EEE    |        1 |
++--------+----------+
+2 rows in set (0.02 sec)
+
+3. Add a field called MARKS to the table STUDENT which can hold a number upto 8 digit length.
+
+mysql> alter table student add marks varchar(8);
+Query OK, 0 rows affected (1.36 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc student;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| name   | varchar(20) | YES  |     | NULL    |       |
+| rollno | int         | YES  |     | NULL    |       |
+| branch | varchar(20) | YES  |     | NULL    |       |
+| city   | varchar(20) | YES  |     | NULL    |       |
+| marks  | varchar(8)  | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+5 rows in set (0.13 sec)
+
+4. Modify the field ”NAME” of the table STUDENT to hold a maximum of 25 character.
+
+mysql> alter table student modify name varchar(25);
+Query OK, 0 rows affected (0.23 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc student;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| name   | varchar(25) | YES  |     | NULL    |       |
+| rollno | int         | YES  |     | NULL    |       |
+| branch | varchar(20) | YES  |     | NULL    |       |
+| city   | varchar(20) | YES  |     | NULL    |       |
+| marks  | varchar(8)  | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+5 rows in set (0.02 sec)
+
+5. Delete all rows from the table STUDENT where branch is ETC.
+
+mysql> delete from student where branch = 'etc';
+Query OK, 3 rows affected (0.05 sec)
+
+mysql> select * from student;
++--------+--------+--------+---------+-------+
+| name   | rollno | branch | city    | marks |
++--------+--------+--------+---------+-------+
+| VIJAYA |    150 | CSE    | CHENNAI | NULL  |
+| RAVI   |    300 | EEE    | DELHI   | NULL  |
+| KARAN  |    111 | CSE    | CTC     | NULL  |
+| REKHA  |    117 | BME    | BBSR    | NULL  |
++--------+--------+--------+---------+-------+
+4 rows in set (0.00 sec)
+
+6. Rename the table STUDENT to STUDINFORMATION.
+
+mysql> rename table student to studinformation;
+Query OK, 0 rows affected (0.46 sec)
+
+mysql> select * from studinformation;
++--------+--------+--------+---------+-------+
+| name   | rollno | branch | city    | marks |
++--------+--------+--------+---------+-------+
+| VIJAYA |    150 | CSE    | CHENNAI | NULL  |
+| RAVI   |    300 | EEE    | DELHI   | NULL  |
+| KARAN  |    111 | CSE    | CTC     | NULL  |
+| REKHA  |    117 | BME    | BBSR    | NULL  |
++--------+--------+--------+---------+-------+
+4 rows in set (0.05 sec)
+
+7. Delete all the data part from the table STUDENT.
+
+mysql> truncate studinformation;
+Query OK, 0 rows affected (0.67 sec)
+
+mysql> select * from studinformation;
+Empty set (0.00 sec)
+
+8. Destroy the table STUDENT
+
+mysql> drop table studinformation;
+Query OK, 0 rows affected (0.30 sec)
+
+mysql> select * from studinformation;
+ERROR 1146 (42S02): Table 'sqlpractice.studinformation' doesn't exist

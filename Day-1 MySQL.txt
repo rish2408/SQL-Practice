@@ -1,0 +1,288 @@
+==========================================================Some of The Most Important SQL Commands=========================================================================
+
+SELECT - extracts data from a database
+UPDATE - updates data in a database
+DELETE - deletes data from a database
+INSERT INTO - inserts new data into a database
+CREATE DATABASE - creates a new database
+ALTER DATABASE - modifies a database
+CREATE TABLE - creates a new table
+ALTER TABLE - modifies a table
+DROP TABLE - deletes a table
+CREATE INDEX - creates an index (search key)
+DROP INDEX - deletes an index
+
+====================================================Above commands are categorized into following categories============================================================
+
+1.DDL (Data defination language)
+(create, alter, drop, truncate, rename)
+
+2. DML (Data manipulation Language)
+(insert, update, delete)
+
+3.DRL (Data Retrival language)
+(select)
+
+4.TCL (Transaction control language)
+(commit, rollback, savepoint)
+
+5. DCL (Decision Control language)
+(grant revoke)
+
+===================================================Datatypes In MySQL===================================================================================================
+
+-----------------1.numeric types-------------------------------------------------
+
+tinyint -> 1byte
+smallint -> 2 byte
+mediumint -> 3byte
+int -> 4byte
+bigint -> 8byte
+float(6,2) -> the column can store 6 digit with 2 decimal places
+
+----------------------------------------------------------------------------------
+
+-----------------2. string types--------------------------------------------------
+
+char  : fixed length of string range bt 0 to 255 char
+varchar: variable length of string bt 1 to 65500, here we must define the length
+
+Note : In the term of efficiency , if we are storing string with variable length 
+	 then we should use varchar, and if the length is always fixed then we should
+ 	 use char, here char is slightly faster than varchar.
+
+----------------------------------------------------------------------------------
+
+-----------------3. date and time types-------------------------------------------
+
+date ->  yyyy-mm-dd
+datetime -> yyyy-mm-dd hh:mm:ss
+
+----------------------------------------------------------------------------------
+
+===================================================Creating Database===================================================================================================
+
+create database sqlpractice;
+
+===================================================Selecting Database===================================================================================================
+
+use sqlpractice;
+
+======================================1.DDL (Data defination language) (create, alter, drop, truncate, rename) ==========================================================
+
+Note : All DDL commands can not be rolledback.
+
+--------------------------------create--------------------------------------------
+mysql> create table student(
+	roll int,
+	name varchar(255),
+	marks int
+);
+----------------------------------------------------------------------------------
+
+--------------------------------alter---------------------------------------------
+Note : alter is used to apply operations on column
+
+--this command has 4 sub commands :
+
+a) add 	-> to add extra column in table
+b) modify	-> to modify any column in table
+c) drop 	-> to delete any column in table
+d) change	-> to change name of any column in table
+
+______________add_________________
+
+mysql> alter table student add address varchar(255);
+__________________________________
+
+______________modify______________
+
+mysql> alter table student modify address varchar(250);
+__________________________________
+
+______________drop________________
+
+mysql> alter table student drop column address;
+__________________________________
+
+______________change______________
+
+mysql> alter table student change name sname varchar(255);
+__________________________________
+
+----------------------------------------------------------------------------------
+
+--------------------------------drop----------------------------------------------
+mysql> drop table student;
+----------------------------------------------------------------------------------
+
+--------------------------------truncate------------------------------------------
+Note : It removes the complete data without removing its structure. 
+
+mysql> truncate table student;
+----------------------------------------------------------------------------------
+
+--------------------------------rename--------------------------------------------
+mysql> rename table student to student1;
+----------------------------------------------------------------------------------
+
+===================================================2. DML (Data manipulation Language) (insert, update, delete) ==========================================================
+
+--------------------------------insert--------------------------------------------
+Note : Two types of insertion
+1. all Columns values
+2. partial columns values
+
+mysql> insert into student1 values(1,'rishabh',999);
+
+mysql> insert into student1(roll,name) values(2,'Mansi');
+----------------------------------------------------------------------------------
+
+--------------------------------update--------------------------------------------
+Note : used to update the records/rows within a table
+
+=> updating all records/rows in table :
+
+mysql> update student set marks = marks+50;
+
+=> updating records/rows condition wise on table :
+
+mysql> update student1 set marks = marks + 100 where name = 'rishabh';
+
+mysql> update student1 set marks = marks - 100 where marks>1000;
+
+mysql> update student1 set name = 'rishman' where roll=1;
+
+----------------------------------------------------------------------------------
+
+--------------------------------delete--------------------------------------------
+Note : used to delete the records/rows within a table
+
+=> delete all records/rows in table :	// it will delete entire record from the table like truncate command.
+
+mysql> delete from student1;
+
+=> deleting records/rows condition wise on table :
+
+mysql> delete from student1 where name = 'Mansi';
+
+----------------------------------------------------------------------------------
+
+===================================================================3.DRL (Data Retrival language) (select) =============================================================
+
+--------------------------------select--------------------------------------------
+Note : used to quering a database tables.
+
+syntax: 
+
+select col1,col2,.. 
+from tablename
+where condition
+[groupby colname]
+having condition
+orderby colname [asc/desc]
+
+mysql> select * from student1;				// all the column and all the rows
+
+select name from student1;
+
+_____________restricting the rows by using where clause_______________
+
+syntax:
+
+select (projecting columns )
+from (from which tables(s) )
+where (condition )
+
+mysql> select * from student1 where marks=999;
+
+mysql> select name from student1 where roll = 1;
+_______________________________________________________________________
+
+________________________Using Order By_________________________________
+
+mysql> select * from student1 order by marks desc;
+
+mysql> select * from student1 order by marks asc;
+_______________________________________________________________________
+
+----------------------------------------------------------------------------------
+
+===================================================Operators In MySQL==================================================================================================
+
+Note: mostly arithmatic operator r used after select statement (90%) and all other
+	 type of remaining operators are used in where clause only
+
+-----------------1. Aritmatic operators: (*,/, + , -, %)--------------------------------------------------------
+
+mysql> select name,marks,marks+100 from student1;
+
++---------+-------+-----------+
+| name    | marks | marks+100 |
++---------+-------+-----------+
+| rishabh |   999 |      1099 |
+| Mansi   |   870 |       970 |
+| Rajat   |   890 |       990 |
+| Kapil   |   740 |       840 |
++---------+-------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> select name,marks,marks+100 Gracemarks from student1;
+
++---------+-------+------------+
+| name    | marks | Gracemarks |
++---------+-------+------------+
+| rishabh |   999 |       1099 |
+| Mansi   |   870 |        970 |
+| Rajat   |   890 |        990 |
+| Kapil   |   740 |        840 |
++---------+-------+------------+
+4 rows in set (0.00 sec)
+
+Note: this temparory name of a column we can not use inside where clause.
+
+mysql> select name,marks from student1 where roll!=4;
+
+-------------------------------------------------------------------------------------------------------------------
+
+-----------------2. Relational operators (= > < <= >= [!= or <>])--------------------------------------------------
+
+-------------------------------------------------------------------------------------------------------------------
+
+-----------------3. Logical operator (AND OR NOT)------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------------------------
+
+----------------4. Special operator(IN,NOT IN, BETWEEN, NOT BETWEEN,IS NULL, IS NOT NULL, LIKE, NOT LIKE)----------
+
+mysql> select * from student1 where marks IS NULL;
+
+mysql> select * from student1 where marks BETWEEN 800 AND 900;
+
+mysql> select * from student1 where marks>=790 AND marks<=900;
+
+____________LIKE ---> NOT LIKE___________________________________
+
+Note : It is used to retrive the data based on charecter pattern
+
+%  -> it represents string or group of charecters.
+
+_  -> it represents a single charecter.
+
+eg1 : name should start with r
+
+mysql> select * from student1 where name LIKE 'r%';
+
+eg2 : in name r should be any charecter
+
+mysql> select * from student1 where name LIKE '%m%';
+_________________________________________________________________
+
+-------------------------------------------------------------------------------------------------------------------
+
+===================================================Using Distinct==================================================================================================
+
+Note : getting unique data
+
+mysql> select distinct marks from student1;
+

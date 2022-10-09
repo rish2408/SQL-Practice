@@ -1,0 +1,792 @@
+====================================================Constraints=================================================
+Note : check => mysql does not support this check constraint.
+
+________________column level constraints (define at column level)_________________________
+
+1. not null => null value not allowed
+
+2. unique => duplicate values not allowed but we can insert multiple null values.
+
+Note : After defining unique then automatically DB engine will create an index on those
+	column so searching based on unique column will become fast.
+
+3. Primary key => duplicate values not allowed and null is also not allowed.
+
+Note : -- Here also DB engine create index on that column.
+	 -- If we want to apply Primary key on multiple column then it will become composit key.
+	 -- With the help of Primary key we can uniquely identify one record of a table.
+
+----------------Difference between Primary Key and Unique--------------
+In one table we can have multiple unique constraints but in one table we can have only one
+Primary Key.
+
+for eg :
+
+create table student(
+	roll int primary key,
+	name varchar(12) unique,
+	address varchar(12) unique,
+	marks int not null
+);
+
+mysql> desc student;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| roll    | int         | NO   | PRI | NULL    |       |
+| name    | varchar(12) | YES  | UNI | NULL    |       |
+| address | varchar(12) | YES  | UNI | NULL    |       |
+| marks   | int         | NO   |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> insert into student values(10,'rishabh','lucknow',950);
+Query OK, 1 row affected (0.27 sec)
+
+_______________duplicate primary key not allowd________________
+mysql> insert into student values(10,'rishabh','lucknow',950);
+ERROR 1062 (23000): Duplicate entry '10' for key 'student.PRIMARY'
+
+_______________duplicate unique key not allowd________________
+mysql> insert into student values(11,'rishabh','lucknow',950);
+ERROR 1062 (23000): Duplicate entry 'rishabh' for key 'student.name'
+
+_______________duplicate unique key not allowd________________
+mysql> insert into student values(11,'mansi','lucknow',950);
+ERROR 1062 (23000): Duplicate entry 'lucknow' for key 'student.address'
+
+_______________in not null, null value not allowed____________
+mysql> insert into student values(11,'mansi','noida',null);
+ERROR 1048 (23000): Column 'marks' cannot be null
+
+mysql> insert into student values(11,'mansi','noida',980);
+Query OK, 1 row affected (1.06 sec)
+
+___________in unique, null value is allowed __________
+mysql> insert into student values(12,null,null,850);
+Query OK, 1 row affected (0.05 sec)
+
+______________ primary key cannot be null _____________
+mysql> insert into student values(null,null,null,850);
+ERROR 1048 (23000): Column 'roll' cannot be null
+
+Note : We can use unique + not null (it behaves like primary key, but two primary keys are not allowd in one table.
+
+create table student(
+	roll int primary key,
+	name varchar(12) unique not null,
+	address varchar(12) unique not null,
+	marks int not null
+);
+
+mysql> desc student;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| roll    | int         | NO   | PRI | NULL    |       |
+| name    | varchar(12) | NO   | UNI | NULL    |       |
+| address | varchar(12) | NO   | UNI | NULL    |       |
+| marks   | int         | NO   |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> insert into student values(10,'rishabh','lucknow',950);
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into student values(11,'mansi','noida',980);
+Query OK, 1 row affected (0.08 sec)
+
+mysql> select * from student;
++------+---------+---------+-------+
+| roll | name    | address | marks |
++------+---------+---------+-------+
+|   10 | rishabh | lucknow |   950 |
+|   11 | mansi   | noida   |   980 |
++------+---------+---------+-------+
+2 rows in set (0.03 sec)
+__________________________________________________________________________________________
+
+________________table level constraints (after defining all the columns)__________________
+
+1. composit key (multi-column primary key)
+
+Apply Primary key on multiple column then it will become composit key.
+
+create table teacher(
+	tname varchar(12),
+	phone varchar(10),
+	email varchar(18),
+	age int,
+	subject varchar(12),
+	primary key(tname,phone)
+);
+
+Note : Here tname and phone will become a composit key, this combination can not be duplicate.
+
+mysql> desc teacher;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| tname   | varchar(12) | NO   | PRI | NULL    |       |
+| phone   | varchar(10) | NO   | PRI | NULL    |       |
+| email   | varchar(18) | YES  |     | NULL    |       |
+| age     | int         | YES  |     | NULL    |       |
+| subject | varchar(12) | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> insert into teacher values('rishabh','9985245251','rish@gmail.com',920,'maths');
+Query OK, 1 row affected (0.61 sec)
+
+mysql> insert into teacher values('rishabh','9985155325','risman@gmail.com',820,'science');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> select * from teacher;
++---------+------------+------------------+------+---------+
+| tname   | phone      | email            | age  | subject |
++---------+------------+------------------+------+---------+
+| rishabh | 9985155325 | risman@gmail.com |  820 | science |
+| rishabh | 9985245251 | rish@gmail.com   |  920 | maths   |
++---------+------------+------------------+------+---------+
+2 rows in set (0.00 sec)
+
+mysql> insert into teacher values('rishabh','9985245251','risman@gmail.com',820,'science');
+ERROR 1062 (23000): Duplicate entry 'rishabh-9985245251' for key 'teacher.PRIMARY'
+
+2. foreign key =>
+
+With the help of Foreign Key we inforce the refrential integrity.
+With the help of Foreign Key we can establish relationship between two tables.
+Primary Key realated Foreign Key must belongs to the same datatype but column name can be different.
+Foreign Key can accept the duplicate and null value also.
+
+create table dept(
+	did int primary key,
+	dname varchar(12),
+	location varchar(12)
+);
+
+mysql> insert into dept values(11,'HR','pune');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into dept values(12,'Sales','noida');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into dept values(13,'Marketing','delhi');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into dept values(14,'Accounts','lucknow');
+Query OK, 1 row affected (0.12 sec)
+
+mysql> select * from dept;
++-----+-----------+----------+
+| did | dname     | location |
++-----+-----------+----------+
+|  11 | HR        | pune     |
+|  12 | Sales     | noida    |
+|  13 | Marketing | delhi    |
+|  14 | Accounts  | lucknow  |
++-----+-----------+----------+
+4 rows in set (0.00 sec)
+
+create table employee(
+	eid int primary key,
+	ename varchar(12),
+	eaddress varchar(12),
+	esalary int,
+	deptid int,
+	foreign key (deptid) references dept(did)
+);
+
+mysql> desc employee;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| eid      | int         | NO   | PRI | NULL    |       |
+| ename    | varchar(12) | YES  |     | NULL    |       |
+| eaddress | varchar(12) | YES  |     | NULL    |       |
+| esalary  | int         | YES  |     | NULL    |       |
+| deptid   | int         | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+________if we try to insert foreign key that is not exist as primary key then it throw an error_______
+
+mysql> insert into employee values(111,'rishabh','lucknow',60000,25);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`sqlpractice`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`deptid`) REFERENCES `dept` (`did`))
+
+* With the help of Foreign Key we establish parent and child relationship among tables.
+* In this example, dept table will act as parent table and emp table will act as a child table.
+* The table which contains the Foreign Key column will be considered as child table.
+
+Note : Whenever we try to establish a relationship using FK then database violates following 2 rules :
+
+1. Deletion or Updation in parent table (even we cannot drop the parent tables also).
+
+for eg :
+
+mysql> drop table dept;
+ERROR 3730 (HY000): Cannot drop table 'dept' referenced by a foreign key constraint 'employee_ibfk_1' on table 'employee'.
+
+mysql> select * from dept;
++-----+-----------+----------+
+| did | dname     | location |
++-----+-----------+----------+
+|  11 | HR        | pune     |
+|  12 | Sales     | noida    |
+|  13 | Marketing | delhi    |
+|  14 | Accounts  | lucknow  |
++-----+-----------+----------+
+4 rows in set (0.00 sec)
+
+mysql> select * from employee;
++-----+---------+----------+---------+--------+
+| eid | ename   | eaddress | esalary | deptid |
++-----+---------+----------+---------+--------+
+| 111 | rishabh | lucknow  |   60000 |     11 |
++-----+---------+----------+---------+--------+
+1 row in set (0.00 sec)
+
+mysql> delete from dept where did = 11;
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`sqlpractice`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`deptid`) REFERENCES `dept` (`did`))
+
+2. Insertion in child table (we are not allowed any other value which is not there in parent table primary key.
+
+for eg :
+
+mysql> insert into employee values(111,'rishabh','lucknow',60000,25);
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`sqlpractice`.`employee`, CONSTRAINT `employee_ibfk_1` FOREIGN KEY (`deptid`) REFERENCES `dept` (`did`))
+
+=========To Overcome this updation and deletion problem we should use ================
+	___________________________________________________________________
+
+on delete cascade
+	or
+on delete set null
+
+on update cascade
+	or
+on update set null
+
+mysql> drop table employee;
+Query OK, 0 rows affected (0.10 sec)
+
+create table employee(
+	eid int primary key,
+	ename varchar(12),
+	eaddress varchar(12),
+	esalary int,
+	deptid int,
+	foreign key (deptid) references dept(did) on delete cascade
+);
+
+mysql> insert into employee values(111,'rishabh','lucknow',60000,11);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from employee;
++-----+---------+----------+---------+--------+
+| eid | ename   | eaddress | esalary | deptid |
++-----+---------+----------+---------+--------+
+| 111 | rishabh | lucknow  |   60000 |     11 |
++-----+---------+----------+---------+--------+
+1 row in set (0.00 sec)
+
+mysql> delete from dept where did = 11;
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from employee;
+Empty set (0.00 sec)
+
+__________setting cascade and null together____________
+
+create table employee(
+	eid int primary key,
+	ename varchar(12),
+	eaddress varchar(12),
+	esalary int,
+	deptid int,
+	foreign key (deptid) references dept(did) on delete cascade on update set null
+);
+
+composit FK => It should refer the composit PK of the parent table.
+============
+
+create table a1(
+	aname varchar(12),
+	address varchar(12),
+	primary key(aname,address)
+);
+
+create table b1(
+	bname varchar(12),
+	location varchar(12),
+	foreign key(bname,location) references a1(aname,address)
+);
+_______________________________________________________________________________________________________
+
+==============================Adding a constraint to an existing table ================================
+
+create table a2(
+	id int,
+	name varchar(12)
+);
+
+mysql> desc a2;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int         | YES  |     | NULL    |       |
+| name  | varchar(12) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> alter table a2 modify id int primary key;
+
+mysql> desc a2;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| id    | int         | NO   | PRI | NULL    |       |
+| name  | varchar(12) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+==============================Adding a FK to an existing table ================================
+
+create table b2(
+	bid int
+);
+
+alter table b2 add foreign key(bid) references a2(id) on delete set null;
+
+=============================== Functions in MYSQL ======================================
+
+* It is used to solve a particular task.
+* A SQL function must return a value.
+
+In SQL we have two types of functions :
+
+1) Predefined Functions
+2) User-Defined Functions(it is in PL/SQL) (Mostly used by DBA People)
+
+1) Predefined Functions
+
+a) Number Functions
+b) Character Functions
+c) Group Functions or Aggregate Functions
+d) Date Functions
+
+____________a) Number Functions______________
+
+1. abs() : It returns the absolute number.
+
+mysql> select abs(-40) from dual;
++----------+
+| abs(-40) |
++----------+
+|       40 |
++----------+
+1 row in set (0.04 sec)
+
+2. mod(m,n) : It returns the reminder of m/n.
+
+mysql> select mod(10,2) from dual;
++-----------+
+| mod(10,2) |
++-----------+
+|         0 |
++-----------+
+1 row in set (0.00 sec)
+
+3. round(m,n) : It round the value
+
+mysql> select round(12.2556231,3) from dual;
++---------------------+
+| round(12.2556231,3) |
++---------------------+
+|              12.256 |
++---------------------+
+1 row in set (0.05 sec)
+
+4. truncate(m,n) : It truncate the value
+
+mysql> select truncate(12.2556231,3) from dual;
++------------------------+
+| truncate(12.2556231,3) |
++------------------------+
+|                 12.255 |
++------------------------+
+1 row in set (0.00 sec)
+
+5. ceil() : It gives ceil value
+
+mysql> select ceil(12.2556231) from dual;
++------------------+
+| ceil(12.2556231) |
++------------------+
+|               13 |
++------------------+
+1 row in set (0.03 sec)
+
+6. floor() : It gives floor value
+
+mysql> select floor(12.2556231) from dual;
++-------------------+
+| floor(12.2556231) |
++-------------------+
+|                12 |
++-------------------+
+1 row in set (0.00 sec)
+
+7. greatest() : It will return biggest value from the list of arguments.
+
+Note : greatest() will not work on single column in table.
+
+mysql> select greatest(10,12,8,15) from dual;
++----------------------+
+| greatest(10,12,8,15) |
++----------------------+
+|                   15 |
++----------------------+
+1 row in set (0.12 sec)
+
+8. least() : It will return smallest value from the list of arguments.
+
+Note : least() will not work on single column in table.
+
+mysql> select least(10,12,8,15) from dual;
++-------------------+
+| least(10,12,8,15) |
++-------------------+
+|                 8 |
++-------------------+
+1 row in set (0.03 sec)
+
+______________b) Character Functions______________
+
+1. upper()
+
+mysql> select upper(tname) from teacher where phone = '9985155325';
++--------------+
+| upper(tname) |
++--------------+
+| RISHABH      |
++--------------+
+1 row in set (0.05 sec)
+
+2. lower()
+
+mysql> select lower(tname) from teacher where phone = '9985155325';
++--------------+
+| lower(tname) |
++--------------+
+| rishabh      |
++--------------+
+1 row in set (0.26 sec)
+
+3. length()
+
+mysql> select lower(tname),length(tname) len from teacher where phone = '9985155325';
++--------------+-----+
+| lower(tname) | len |
++--------------+-----+
+| rishabh      |   7 |
++--------------+-----+
+1 row in set (0.00 sec)
+
+4. replace()
+
+5. concat()
+
+mysql> select concat(tname,' sri') from teacher where phone = '9985155325';
++----------------------+
+| concat(tname,' sri') |
++----------------------+
+| rishabh sri          |
++----------------------+
+1 row in set (0.10 sec)
+
+6. substr()
+
+mysql> select substr(tname,3,2) from teacher where phone = '9985155325';
++-------------------+
+| substr(tname,3,2) |
++-------------------+
+| sh                |
++-------------------+
+1 row in set (0.02 sec)
+
+______________d) Date Functions______________
+
+1. sysdate() : It will return the current date and time.
+
+mysql> select sysdate() from dual;                                           S
++---------------------+
+| sysdate()           |
++---------------------+
+| 2022-10-05 18:39:30 |
++---------------------+
+1 row in set (0.22 sec)
+
+2. date_format(sysdate(),'%d/%m/%y') : It will format the current date.
+
+mysql> select date_format(sysdate(),'%d/%m/%y') from dual;
++-----------------------------------+
+| date_format(sysdate(),'%d/%m/%y') |
++-----------------------------------+
+| 05/10/22                          |
++-----------------------------------+
+1 row in set (0.00 sec)
+
+3. adddate(date,Interval value unit) : It will return the added date to current date.
+
+unit : day, hour, year, month, week
+
+mysql> select adddate(sysdate(), Interval 4 month);
++--------------------------------------+
+| adddate(sysdate(), Interval 4 month) |
++--------------------------------------+
+| 2023-02-05 18:42:53                  |
++--------------------------------------+
+1 row in set (0.04 sec)
+
+__________________c) Group Functions or Aggregate Functions___________________
+
+These functions opearates over several values of a single column and then result in a single value.
+
+Note : From a single column if we want value then we should use group functions.
+======
+
+1. max() : It will return maximum value in column
+
+mysql> select max(age) from teacher;
++----------+
+| max(age) |
++----------+
+|      920 |
++----------+
+1 row in set (0.15 sec)
+
+2. min() : It will return minimum value in column
+
+mysql> select min(age) from teacher;
++----------+
+| min(age) |
++----------+
+|      820 |
++----------+
+1 row in set (0.00 sec)
+
+3. avg() : It returns the average
+
+mysql> select avg(marks) total from student;
++----------+
+| total    |
++----------+
+| 915.0000 |
++----------+
+1 row in set (0.10 sec)
+
+4. sum() : It return the sum.
+
+mysql> select sum(marks) total from student;
++-------+
+| total |
++-------+
+|  3660 |
++-------+
+1 row in set (0.05 sec)
+
+5. count(*) : It returns number of all records
+
+mysql> select count(*) count from student;
++-------+
+| count |
++-------+
+|     4 |
++-------+
+1 row in set (0.03 sec)
+
+6. count(columnName) : It returns number of all records excepts null values
+
+mysql> select * from employee;
++-----+---------+----------+---------+--------+
+| eid | ename   | eaddress | esalary | deptid |
++-----+---------+----------+---------+--------+
+|   1 | rishabh | lucknow  |   60000 |     12 |
+|   2 | mansi   | noida    |   80000 |     13 |
+|   3 | kapil   | delhi    |   50000 |   NULL |
++-----+---------+----------+---------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select count(deptid) total from employee;
++-------+
+| total |
++-------+
+|     2 |
++-------+
+1 row in set (0.00 sec)
+
+===================================Group by clause ======================================
+
+* The main purpose of group by clause is to group the records.
+* This clause is mostly used with the group functions only.
+* It is used to divide the similar data items into set of logical groups.
+
+short syntax :
+----------------
+
+select col_name 
+from 
+table 
+group by col_name
+
+full syntax :
+----------------
+
+select col_name
+from
+table
+where condition (optional)
+group by col_name
+having condition (optional)
+
+mysql> select * from employee;
++-----+---------+----------+---------+--------+
+| eid | ename   | eaddress | esalary | deptid |
++-----+---------+----------+---------+--------+
+|   1 | rishabh | lucknow  |   60000 |     12 |
+|   2 | mansi   | noida    |   80000 |     13 |
+|   3 | kapil   | delhi    |   50000 |     14 |
+|   4 | deepak  | haridwar |   50000 |     13 |
+|   5 | richa   | banglore |   50000 |     14 |
+|   6 | vivek   | pune     |  100000 |     13 |
++-----+---------+----------+---------+--------+
+6 rows in set (0.00 sec)
+
+Note : The above data is called as detailed data and after performing the group by, we get the summerized data which is useful for analysis.
+
+___________ All employee Whole salary_________________
+
+mysql> select sum(esalary) total_salary from employee;
++--------------+
+| total_salary |
++--------------+
+|       390000 |
++--------------+
+1 row in set (0.00 sec)
+
+___________ Department wise employee salary_________________
+
+mysql> select deptid,sum(esalary) from employee group by deptid;
++--------+--------------+
+| deptid | sum(esalary) |
++--------+--------------+
+|     12 |        60000 |
+|     13 |       230000 |
+|     14 |       100000 |
++--------+--------------+
+3 rows in set (0.02 sec)
+
+___________ Department wise minimum,maximum and average salary_________________
+
+mysql> select deptid,min(esalary),max(esalary),avg(esalary) from employee group by deptid;
++--------+--------------+--------------+--------------+
+| deptid | min(esalary) | max(esalary) | avg(esalary) |
++--------+--------------+--------------+--------------+
+|     12 |        60000 |        60000 |   60000.0000 |
+|     13 |        50000 |       100000 |   76666.6667 |
+|     14 |        50000 |        50000 |   50000.0000 |
++--------+--------------+--------------+--------------+
+3 rows in set (0.00 sec)
+
+Rules :
+_________
+
+1. Group functions we cannot use inside the where clause.
+
+
+ wrong syntax -
+===============
+
+mysql> select * from employee where esalary > min(esalary);
+ERROR 1111 (HY000): Invalid use of group function
+
+right syntax -
+================
+
+mysql> select min(esalary) from employee where esalary > 50000;
++--------------+
+| min(esalary) |
++--------------+
+|        60000 |
++--------------+
+1 row in set (0.00 sec)
+
+2. Other than group function all the columns mentioned inside the select clause must be there after the group by clause
+   otherwise (oracle database will give an error and mysql may give the unexpected result.
+
+mysql> select * from employee;
++-----+---------+----------+---------+--------+
+| eid | ename   | eaddress | esalary | deptid |
++-----+---------+----------+---------+--------+
+|   1 | rishabh | lucknow  |   60000 |     12 |
+|   2 | mansi   | noida    |   80000 |     13 |
+|   3 | kapil   | delhi    |   50000 |     14 |
+|   4 | deepak  | haridwar |   50000 |     13 |
+|   5 | richa   | banglore |   50000 |     14 |
+|   6 | vivek   | pune     |  100000 |     13 |
+|   7 | vivek   | indor    |   70000 |     13 |
++-----+---------+----------+---------+--------+
+7 rows in set (0.00 sec)
+
+mysql> select deptid,ename, sum(esalary) from employee group by deptid,ename;
++--------+---------+--------------+
+| deptid | ename   | sum(esalary) |
++--------+---------+--------------+
+|     12 | rishabh |        60000 |
+|     13 | mansi   |        80000 |
+|     14 | kapil   |        50000 |
+|     13 | deepak  |        50000 |
+|     14 | richa   |        50000 |
+|     13 | vivek   |       170000 |
++--------+---------+--------------+
+6 rows in set (0.22 sec)
+
+mysql> select deptid,ename, count(*) from employee group by deptid,ename;
++--------+---------+----------+
+| deptid | ename   | count(*) |
++--------+---------+----------+
+|     12 | rishabh |        1 |
+|     13 | mansi   |        1 |
+|     14 | kapil   |        1 |
+|     13 | deepak  |        1 |
+|     14 | richa   |        1 |
+|     13 | vivek   |        2 |
++--------+---------+----------+
+6 rows in set (0.05 sec)
+
+_____________________Department wise employee__________________
+
+mysql> select deptid, count(*) from employee group by deptid;
++--------+----------+
+| deptid | count(*) |
++--------+----------+
+|     12 |        1 |
+|     13 |        4 |
+|     14 |        2 |
++--------+----------+
+3 rows in set (0.00 sec)
+
+=================================Having Clause=========================================
+
+After group by clause we are not allowed to use where clause in place of where clause we should
+use having clause after group by clause.
+
+mysql> select deptid, count(*) from employee where deptid IN(12,13,14) group by deptid having count(*)>2;
++--------+----------+
+| deptid | count(*) |
++--------+----------+
+|     13 |        4 |
++--------+----------+
+1 row in set (0.04 sec)
