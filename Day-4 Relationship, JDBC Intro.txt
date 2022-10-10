@@ -1,0 +1,471 @@
+===============================Relationship among tables===============================
+
+At table level we have 3 type of relationships:
+------------------------------------------------
+
+1. One to One 
+	for eg :- (Person --> DL , Person --> AadharCard) 
+
+2. One to Many 
+	for eg :- (Father -->> child, Teacher -->> Student, Dept -->> Emp, School -->> Student)
+
+3.Many to Many
+	for eg :- (Student <<-->> Course, Book <<-->> Author, Movies <<-->> Actors)
+
+1. One to One 
+===============
+
+create table Person
+(
+pid int primary key,
+pname varchar(12),
+address varchar(12),
+mobile varchar(10),
+email varchar(15)
+);
+
+create table DL
+(
+dlid int primary key,
+issueDate date,
+expDate date,
+rto varchar(12),
+personId int unique ,
+foreign key (personId) references Person(pid)
+);
+
+mysql> insert into person values(1,'Rishabh','Lucknow','8845562452','rishi@gmail.com');
+Query OK, 1 row affected (0.20 sec)
+
+mysql> insert into person values(2,'Mansi','Noida','9484515514','mansi@gmail.com');
+Query OK, 1 row affected (0.20 sec)
+
+mysql> insert into person values(3,'Kapil','Delhi','8845151151','kapil@gmail.com');
+Query OK, 1 row affected (0.20 sec)
+
+mysql> select * from person;
++-----+---------+---------+------------+-----------------+
+| pid | pname   | address | mobile     | email           |
++-----+---------+---------+------------+-----------------+
+|   1 | Rishabh | Lucknow | 8845562452 | rishi@gmail.com |
+|   2 | Mansi   | Noida   | 9484515514 | mansi@gmail.com |
+|   3 | Kapil   | Delhi   | 8845151151 | kapil@gmail.com |
++-----+---------+---------+------------+-----------------+
+3 rows in set (0.00 sec)
+
+mysql> insert into dl values(456545,'2022-09-24','2030-10-16','UPRTO',1);
+Query OK, 1 row affected (0.13 sec)
+
+mysql> select * from dl;
++--------+------------+------------+-------+----------+
+| dlid   | issueDate  | expDate    | rto   | personId |
++--------+------------+------------+-------+----------+
+| 456545 | 2022-09-24 | 2030-10-16 | UPRTO |        1 |
++--------+------------+------------+-------+----------+
+1 row in set (0.00 sec)
+
+mysql> insert into dl values(542452,'2022-08-24','2030-11-26','UPRTO',1);
+ERROR 1062 (23000): Duplicate entry '1' for key 'dl.personId'
+
+2.One to Many 
+==============
+
+create table dept(
+	did int primary key,
+	dname varchar(12),
+	location varchar(12)
+);
+
+mysql> insert into dept values(11,'HR','pune');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into dept values(12,'Sales','noida');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into dept values(13,'Marketing','delhi');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> insert into dept values(14,'Accounts','lucknow');
+Query OK, 1 row affected (0.12 sec)
+
+mysql> select * from dept;
++-----+-----------+----------+
+| did | dname     | location |
++-----+-----------+----------+
+|  11 | HR        | pune     |
+|  12 | Sales     | noida    |
+|  13 | Marketing | delhi    |
+|  14 | Accounts  | lucknow  |
++-----+-----------+----------+
+4 rows in set (0.00 sec)
+
+create table employee(
+	eid int primary key,
+	ename varchar(12),
+	eaddress varchar(12),
+	esalary int,
+	deptid int,
+	foreign key (deptid) references dept(did) on delete cascade
+);
+
+mysql> insert into employee values(111,'rishabh','lucknow',60000,11);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select * from employee;
++-----+---------+----------+---------+--------+
+| eid | ename   | eaddress | esalary | deptid |
++-----+---------+----------+---------+--------+
+| 111 | rishabh | lucknow  |   60000 |     11 |
++-----+---------+----------+---------+--------+
+1 row in set (0.00 sec)
+
+3. Many to Many
+================
+
+Student(roll, sname, address, mobile)
+
+Course(cid , cname, fee, duration)
+
+Note: Whenever we have a Many to Many relationship we need to take the help of 3rd linking table
+
+student_course(roll, cid);
+
+create table student(
+roll int primary key,
+sname varchar(12),
+address varchar(12),
+mobile varchar(10)
+);
+
+create table course(
+cid int primary key,
+cname varchar(12),
+fee int, 
+duration varchar(12)
+);
+
+create table student_course
+(
+roll int,
+cid int, 
+foreign key (roll) references student(roll), 
+foreign key (cid) references course(cid)
+);
+
+mysql> insert into student values(1,'Rishabh','Lucknow','9948455');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into student values(2,'Mansi','Noida','9524564');
+Query OK, 1 row affected (0.13 sec)
+
+mysql> insert into student values(3,'Kapil','Delhi','9555648');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into student values(4,'Deepak','Haridwar','9564523');
+Query OK, 1 row affected (0.18 sec)
+
+mysql> select * from student;
++------+---------+----------+---------+
+| roll | sname   | address  | mobile  |
++------+---------+----------+---------+
+|    1 | Rishabh | Lucknow  | 9948455 |
+|    2 | Mansi   | Noida    | 9524564 |
+|    3 | Kapil   | Delhi    | 9555648 |
+|    4 | Deepak  | Haridwar | 9564523 |
++------+---------+----------+---------+
+4 rows in set (0.00 sec)
+
+mysql> insert into course values(1000,'Java',8500,'45-Days');
+Query OK, 1 row affected (0.14 sec)
+
+mysql> insert into course values(1001,'Spring',9500,'55-Days');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into course values(1002,'SQL',6500,'25-Days');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into course values(1003,'Hibernate',5500,'35-Days');
+Query OK, 1 row affected (0.14 sec)
+
+mysql> select * from course;
++------+-----------+------+----------+
+| cid  | cname     | fee  | duration |
++------+-----------+------+----------+
+| 1000 | Java      | 8500 | 45-Days  |
+| 1001 | Spring    | 9500 | 55-Days  |
+| 1002 | SQL       | 6500 | 25-Days  |
+| 1003 | Hibernate | 5500 | 35-Days  |
++------+-----------+------+----------+
+4 rows in set (0.00 sec)
+
+mysql> insert into student_course values(1,1000);
+Query OK, 1 row affected (0.11 sec)
+
+mysql> insert into student_course values(1,1001);
+Query OK, 1 row affected (0.14 sec)
+
+mysql> insert into student_course values(1,1002);
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into student_course values(2,1001);
+Query OK, 1 row affected (0.09 sec)
+
+mysql> insert into student_course values(3,1001);
+Query OK, 1 row affected (0.07 sec)
+
+mysql> insert into student_course values(3,1003);
+Query OK, 1 row affected (0.19 sec)
+
+mysql> insert into student_course values(4,1000);
+Query OK, 1 row affected (0.13 sec)
+
+mysql> insert into student_course values(4,1002);
+Query OK, 1 row affected (0.12 sec)
+
+mysql> select * from student_course;
++------+------+
+| roll | cid  |
++------+------+
+|    1 | 1000 |
+|    1 | 1001 |
+|    1 | 1002 |
+|    2 | 1001 |
+|    3 | 1001 |
+|    3 | 1003 |
+|    4 | 1000 |
+|    4 | 1002 |
++------+------+
+8 rows in set (0.00 sec)
+
+-------------------Write a query for getting the Student details who enrolled in Java-------------------
+
+mysql> select s.roll, s.sname, s.address, s.mobile, c.cname, c.fee, c.duration
+    -> from student s INNER JOIN course c INNER JOIN student_course sc
+    -> ON
+    -> s.roll = sc.roll AND c.cid=sc.cid AND c.cname='Java';
+
++------+---------+----------+---------+-------+------+----------+
+| roll | sname   | address  | mobile  | cname | fee  | duration |
++------+---------+----------+---------+-------+------+----------+
+|    1 | Rishabh | Lucknow  | 9948455 | Java  | 8500 | 45-Days  |
+|    4 | Deepak  | Haridwar | 9564523 | Java  | 8500 | 45-Days  |
++------+---------+----------+---------+-------+------+----------+
+2 rows in set (0.00 sec)
+
+or
+
+mysql> select s.roll, s.sname, s.address, s.mobile, c.cname, c.fee, c.duration
+    -> from student s, course c, student_course sc
+    -> where
+    -> s.roll = sc.roll AND c.cid=sc.cid AND c.cname='Java';
++------+---------+----------+---------+-------+------+----------+
+| roll | sname   | address  | mobile  | cname | fee  | duration |
++------+---------+----------+---------+-------+------+----------+
+|    1 | Rishabh | Lucknow  | 9948455 | Java  | 8500 | 45-Days  |
+|    4 | Deepak  | Haridwar | 9564523 | Java  | 8500 | 45-Days  |
++------+---------+----------+---------+-------+------+----------+
+2 rows in set (0.00 sec)
+
+Syntax
+======
+
+select .....
+from ...
+ON (where) 
+[group by, having, order by, limit]
+
+
+Note : DBA Developer Role : DDL :-- ER diagram(Entity relationship diagram)
+Note : Java Developer : It is allowed to perform CRUD operation (DML + DRL)
+
+Create a record   (insert)
+Retrieve a record (select)
+Update a record (update)
+Delete a record (delete)
+
+===========================JDBC (Java Database connectivity)==========================
+
+Java mostly used in industry to develop Business application.
+
+Common and general things required in a business application.
+---------------------------------------------------------------
+
+1. maintaining the business data permanently in a secure and easily retrival manner.
+
+2. processing the data according to the business rule.
+
+3. presenting the data to the user in user understandable format.
+
+We can store the business data for a typical business application inside the RDBMS software.
+
+----------------------Why Java and DB communication is required ?--------------------------------
+
+DBMS are excellent in data storege in secure and easily retrival manner but it is very poor in 
+processing and presenting the data in user-understandable format.
+
+java is excellent in processing the data and presenting the data but java is very poor in storing
+the data(in java we can store the data using Serialization processing).
+
+So in order to develop a powerfull business application we need to communicate our java application
+with the DB server.
+
+------------------------How Java-Database communication is possible ?-------------------------------------
+
+Java App can do any task only through the method calls and objects, these method calls and objects are
+not directly understandable to the Database software and the Database can understand only sql, Java compiler
+does not accept the sql syntax directly. Inspite of heteregenious platform Java-DB communication is possible
+through the JDBC.
+
+           translator
+chinese ---------------- Russian 
+
+       Jdbc driver s/w
+Java ------------------- DB  
+
+JDBC is a technology that enables any kind of java application to communicate with any kind of DB software in a 
+standard manner.JDBC technology is given by sun-microsystem. JDBC technology comes in the form of a 
+specification (it is documentation which describes rules and guidelines to develop a perticular software  
+"Jdbc driver software").
+
+Jdbc driver software is the implementation of the Jdbc specification , which will act as a translator software
+to communicate our java app with the DB software.JDBC specification will be implemented by the DB verndor or 
+any 3rd party vendor also and develop the  "Jdbc driver s/w". Each DB s/w have their own JDBC driver software, 
+this driver software comes in the form of a .jar file.
+
+Mysql : mysql-connector.jar
+
+Oracle : ojdbc6.jar
+
+Postgres : postgress.jar 
+ 
+Java developer need to get/download the jdbc driver related jar file from the internet, and in order to work 
+with that jar file, we need to set that jar file inside the classpath of our application.
+
+Java application 
+{
+	classes (method)
+	interface
+}
+
+compile all the .java files ------> .class files -----> zip all the .class ----> inside a1.jar file.
+
+rishabhapp{ A.java, B.java, Demo.java } ---> make them a1.jar file.
+
+class X  	// here we need to set the a1.jar file in the classpath of our application
+{ 
+	main()
+	{
+		A a1 = new A();
+	}
+}
+
+In order to communicate java application and DB server , Java developer need the "jdbc driver s/w" and 
+"jdbc api" to perform the DB operation from the Java application.
+
+jdbc api comes in the form of 2 packages:
+=========================================
+
+1.java.sql package
+
+2. javax.sql package
+
+
+JDBC Client:
+===========
+
+In java-DB communication , our Java application will act as a client becoz Java application needs the 
+services of the DB server. So our Java application is a JDBC client.
+
+Responsibility of the JDBC client:
+==================================
+
+1. Requesting the DB connection.
+
+2. Submitting the appropriate SQL statement to the DB server in the form of String.
+
+3.Processing the result given by the DB server.
+
+4.Dealing with exceptions if any.
+
+5.Managing the transactions whenever it is required.
+
+6.closing the connection once done with the DB operation.
+
+JDBC driver :
+=============
+
+It is a translation software written in Java according to the JDBC specificaiton (it comes in the form
+of Jar file.)
+
+Responsibility of JDBC driver software :
+=======================================
+
+1. establishing the Connection.
+
+2. receiving the JDBC method calls (java method call ) and translate them into DBMS understandable format.
+(SQL) and forward them to the DB s/w.
+
+3.Translating the DB s/w given result into the Java format (Java objects) and returns that object toe hte JDBC client.
+
+
+step of connect our java application with the DB server (mysql)
+================================================================
+
+1. Download/get the jdbc driver related jar file (mysql-connector.jar) and set that jar file inside the classpath of
+   our application.
+
+2. Load the Driver related main class into the memory.
+
+3. Prepare the Connection string.
+
+4. Establish the connection.
+
+5. After performing the CRUD operation close the connection.
+
+Setting the jar file in the classpath of our application:
+----------------------------------------------------------------
+
+rightclick on the project----> build path ----> configure build path---->libraries---->Classpath---->Add External jars--->select the downloaded jar file ----> apply and close.
+
+Demo.java:
+--------------
+
+package jdbcproject1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class Demo {
+
+	public static void main(String[] args) {
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		String url = "jdbc:mysql://localhost:3306/web19sb101db";
+		
+		try {
+		 Connection conn=  DriverManager.getConnection(url, "root", "root");
+		 
+		 if(conn != null)
+			 System.out.println("connected...");
+		 
+		 
+		 
+		}catch(SQLException e) {
+			
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
+
+}
+
