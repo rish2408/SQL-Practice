@@ -1,0 +1,782 @@
+====================================================JDBC=======================================================
+
+Note : from Java 1.6 onwards loading the Driver main class is optional.
+
+Inserting record into the table using Java application
+=======================================================
+
+Once we get the Connection object then we can execute any sql statment from our java application to the Database
+server. We require a "Statement" object.
+
+java.sql.Statement(I)
+
+We get the Statement object by using
+--------------------------------------
+
+Statement st= conn.createStatement();
+
+Once we get the Statement object, in order to execute any sql statement from our Java application we need to use
+following methods:
+
+1. public int executeUpdate(String dml)throws SQLException;
+-------------------------------------------------------------
+
+It will return the number of rows affected due to the supplied sql statement.
+
+2. public ResultSet executeQuery(String drl)throws SQLException
+----------------------------------------------------------------
+
+3.public boolean execute(String anysql)throws SQLException
+------------------------------------------------------------
+
+Using this method we can execute any type of SQL statement (DML, DRL, DDL);
+
+=======================================Run MySQL============================================
+
+mysql> create table student(roll int primary key,name varchar(20),marks int);
+Query OK, 0 rows affected (2.19 sec)
+
+mysql> desc student;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| roll  | int         | NO   | PRI | NULL    |       |
+| name  | varchar(20) | YES  |     | NULL    |       |
+| marks | int         | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.14 sec)
+
+mysql> select * from student;
+Empty set (0.07 sec)
+
+Demo.java:
+-----------
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try {
+			Connection conn = DriverManager.getConnection(url, "root", "root");
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+			Statement st = conn.createStatement();
+			
+			int result = st.executeUpdate("insert into student values(1,'Rishabh Srivastava',999)");
+			
+			if(result>0)
+				System.out.println("Data Inserted Successfully");
+			else
+				System.out.println("Not Inserted");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+mysql> select * from student;
+Empty set (0.07 sec)
+
+mysql> select * from student;
++------+--------------------+-------+
+| roll | name               | marks |
++------+--------------------+-------+
+|    1 | Rishabh Srivastava |   999 |
++------+--------------------+-------+
+1 row in set (0.00 sec)
+
+If we run the same program again so due to roll as a primary key it show error message
+---------------------------------------------------------------------------------------
+
+java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '1' for key 'student.PRIMARY'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:117)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.StatementImpl.executeUpdateInternal(StatementImpl.java:1334)
+	at com.mysql.cj.jdbc.StatementImpl.executeLargeUpdate(StatementImpl.java:2084)
+	at com.mysql.cj.jdbc.StatementImpl.executeUpdate(StatementImpl.java:1245)
+	at com.practice.app1.Demo.main(Demo.java:29)
+
+
+Closing the connection (First Method)
+-------------------------------------
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		Connection conn = null;
+		
+		try {
+			conn = DriverManager.getConnection(url, "root", "root");
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+			Statement st = conn.createStatement();
+			
+			int result = st.executeUpdate("insert into student values(2,'Mansi Soni',870)");
+			
+			if(result>0)
+				System.out.println("Data Inserted Successfully");
+			else
+				System.out.println("Not Inserted");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+}
+
+
+Closing the connection (Second Method - Try with resource)
+-----------------------------------------------------------
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try(Connection conn = DriverManager.getConnection(url, "root", "root")) {
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+			Statement st = conn.createStatement();
+			
+			int result = st.executeUpdate("insert into student values(3,'Kapil Sharma',830)");
+			
+			if(result>0)
+				System.out.println("Data Inserted Successfully");
+			else
+				System.out.println("Not Inserted");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+
+Using Statement obj inserting dynamic details in the table
+-----------------------------------------------------------
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter your roll number");
+		int roll = sc.nextInt();
+		
+		System.out.println("Enter your name");
+		String name = sc.next();
+		
+		sc.nextLine();
+		
+		System.out.println("Enter your marks");
+		int marks = sc.nextInt();
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try(Connection conn = DriverManager.getConnection(url, "root", "root")) {
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+			Statement st = conn.createStatement();
+			
+			int result = st.executeUpdate("insert into student values("+roll+",'"+name+"',"+marks+")");
+			
+			if(result>0)
+				System.out.println("Data Inserted Successfully");
+			else
+				System.out.println("Not Inserted");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+
+
+Note: If we use the Statement(I) object to perform any DB operation then Statement object has the following limitations:
+
+1. complexities to concatenate dynamic variables.
+
+2. Whenever we pass any query to the DB using Statement obj , DB engine will perform following tasks
+   every time to execute that query:-
+
+a.query compilation
+b.query plan generation
+c.query optamization
+
+For the same query doing these operations every time, it will degrade the performance. So, to tell
+the DB engine to perform above 3 task only at first time with the value or without the value and put
+that query in the cache , next time onwards just add the dynamic values and execute the query 
+
+Note : For that we need to use "java.sql.PreparedStatement" obj instead of "java.sql.Statement" obj.
+
+Statement(I)
+     |
+PreparedStatement(I)
+
+Note : Statement object is relativly faster than PreparedStatement.
+
+To get the PreparedStatement object we need to call "prepareStatement(String sql)" method on the 
+Connection object, with the value or without the value. In case of without the value, we need to use
+placeholders (?)
+
+for eg :
+
+PreparedStatement ps =  conn.prepareStatement("insert into student values(10,'ram',800)");
+
+PreparedStatement ps =  conn.prepareStatement("insert into student values(?,?,?)");
+
+In case of placeholders, before executing the query we need to bind the appropriate values with the
+corresponding placeholders by calling various types of setXXX(--) method on the PreparedStatement object.
+
+for eg :
+
+ps.setInt(1, roll);
+ps.setString(2,name);
+ps.setInt(3,marks);
+
+These roll, name, marks are the variables which holds the dynamic data. After binding the appropriate 
+placeholders we need to execute the query by using one of the following methods of the PreparedStatement
+object.
+
+public int executeUpdate();
+
+public ResultSet executeQuery()
+
+public boolean execute();
+
+Using PreparedStatement
+========================
+
+inserting a record:
+===================
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter your roll number");
+		int roll = sc.nextInt();
+		
+		System.out.println("Enter your name");
+		String name = sc.next();
+		
+		sc.nextLine();
+		
+		System.out.println("Enter your marks");
+		int marks = sc.nextInt();
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try(Connection conn = DriverManager.getConnection(url, "root", "root")) {
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+		PreparedStatement ps = conn.prepareStatement("insert into student values(?,?,?)");
+			
+		ps.setInt(1, roll);
+		ps.setString(2, name);
+		ps.setInt(3, marks);
+		
+		int result = ps.executeUpdate();
+		
+		if(result>0)
+			System.out.println("Data Inserted Successfully");
+		else
+			System.out.println("Data not Inserted");
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+
+updating a record:
+===================
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter your marks");
+		int marks = sc.nextInt();
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try(Connection conn = DriverManager.getConnection(url, "root", "root")) {
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+		PreparedStatement ps = conn.prepareStatement("update student set marks = marks + ? where marks<800");
+			
+		ps.setInt(1, marks);
+		
+		int result = ps.executeUpdate();
+		
+		if(result>0)
+			System.out.println(result +" Data Updated Successfully");
+		else
+			System.out.println("Data not Updated");
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+deleting a record:
+===================
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter Student roll number to delete student");
+		int roll = sc.nextInt();
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try(Connection conn = DriverManager.getConnection(url, "root", "root")) {
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+		PreparedStatement ps = conn.prepareStatement("delete from student where roll = ?");
+			
+		ps.setInt(1, roll);
+		
+		int result = ps.executeUpdate();
+		
+		if(result>0)
+			System.out.println(result +" Data Deleted Successfully");
+		else
+			System.out.println("Record Doesn't Exist");
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+
+Performing DRL operation (select operation):
+=============================================
+
+
+		PreparedStatement ps= conn.prepareStatement("select * from student");
+		 	
+		ResultSet rs = ps.executeQuery();	
+		 
+Here we get the records from DB, in form of "java.sql.ResultSet(I)" object. In order to get the
+details from the ResultSet object we should know the structure of the ResultSet object.
+
+Note : ResultSet object structure will depends upon the query what we have executed, it does not
+depends upon the table structure.
+
+Now we need to move the cursor from the BFR to the record area, and fetch the data from each column.
+ 
+To move the record from the BFR to the record area we have a method in the ResultSet object:
+---------------------------------------------------------------------------------------------
+
+public boolean next(); 			// it will move the cursor to the record area and if any record
+					 	is there it returns true and if it points the ALR then it return false.
+
+To access/get the column field value from the cursor pointed record we need to call following methods
+on the ResultSet object:
+------------------------------------------------------------------------------------------------------
+
+public XXX getXXX(String columnName);  // Here XXX will replace with proper datatype of the value.
+
+public int getInt("roll");
+public String getString("name");
+public int getInt("marks");
+
+for eg :
+
+int r = rs.getInt("roll");
+String n = rs.getString("name");
+int m =  rs.getInt("marks");
+
+To move the cursor from the BFR to the record area we need to follow following stretegy :
+-----------------------------------------------------------------------------------------
+
+1. if we sure that only 0 or 1 record will be there (atmost 1) : in that case we need to use if-else condition.
+(when our search condition in on primary key)
+
+2. if there may be a chance of getting more than 1 record then we need to use "while loop"
+
+Demo.java:
+---------------
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try(Connection conn = DriverManager.getConnection(url, "root", "root")) {
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+		PreparedStatement ps = conn.prepareStatement("select * from student");
+		
+		ResultSet rs = ps.executeQuery();
+		
+		while(rs.next())
+		{
+			int r = rs.getInt("roll");
+			String n = rs.getString("name");
+			int m = rs.getInt("marks");
+			
+			System.out.println("Roll Number is "+r);
+			System.out.println("Name is "+n);
+			System.out.println("Marks is "+m);
+			System.out.println("=========================");
+		}
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+Devloping a searching application using JDBC:
+=============================================
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter a roll number to search student");
+		int roll = sc.nextInt();
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try(Connection conn = DriverManager.getConnection(url, "root", "root")) {
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+		PreparedStatement ps = conn.prepareStatement("select * from student where roll = ?");
+		
+		ps.setInt(1, roll);
+		
+		ResultSet rs = ps.executeQuery();
+		
+		if(rs.next())
+		{
+			int r = rs.getInt("roll");
+			String n = rs.getString("name");
+			int m = rs.getInt("marks");
+			
+			System.out.println("Roll Number is "+r);
+			System.out.println("Name is "+n);
+			System.out.println("Marks is "+m);
+			System.out.println("=========================");
+		}else
+		{
+			System.out.println("Student with "+roll+" roll number doesn't exist");
+		}
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+
+
+Getting only marks:
+===============
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter a roll number to get marks");
+		int roll = sc.nextInt();
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try(Connection conn = DriverManager.getConnection(url, "root", "root")) {
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+		PreparedStatement ps = conn.prepareStatement("select marks from student where roll = ?");
+		
+		ps.setInt(1, roll);
+		
+		ResultSet rs = ps.executeQuery();
+		
+		if(rs.next())
+		{
+			int m = rs.getInt("marks");
+			
+			System.out.println("Marks is "+m);
+			System.out.println("=========================");
+		}else
+		{
+			System.out.println("Student with "+roll+" roll number doesn't exist");
+		}
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+Getting all the record based on marks less than 900:
+====================================================
+
+package com.practice.app1;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class Demo {
+
+	public static void main(String[] args) {
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String url = "jdbc:mysql://localhost:3306/jdbcpractice";
+		
+		try(Connection conn = DriverManager.getConnection(url, "root", "root")) {
+			
+//			if(conn!=null)
+//				System.out.println("Connected");
+			
+		PreparedStatement ps = conn.prepareStatement("select name,marks from student where marks<900");
+		
+		ResultSet rs = ps.executeQuery();
+		
+		boolean flag = true;
+		
+		while(rs.next())
+		{
+			flag = false;
+			String n = rs.getString("name");
+			int m = rs.getInt("marks");
+			
+			System.out.println("Name is "+n);
+			System.out.println("Marks is "+m);
+			System.out.println("=========================");
+		}
+		
+		if(flag)
+			System.out.println("No Record Available");
+		
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

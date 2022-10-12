@@ -1,0 +1,466 @@
+============================================Normalization================================================
+
+Normalization is a process of organizing the data in db to avoid the redundency(duplication) and because
+of data redundency threre are several problems in the DB.
+
+Anomalies in Database:
+----------------------
+
+An anomaly is something is different from what is normal or usual(insconsistency) or abnormalities.
+
+Lets try to have a single table to manage employee details
+___________________________________________________________
+
+EID   NAME    SALARY     DID     DNAME     LOCATION
+
+1      Ram     5000      1001     HR         DELHI
+2      Shyam   6000      1001     HR         DELHI
+3      MANOJ   6500      1001     HR         DELHI
+4      Suresh  7000      1002     SALES      MUMBAI
+5      RAVI    7200      1002     SALES      MUMBAI
+6      Ramesh  7500      1003     Accounts   Chennai
+
+
+Note : Here entire department related data is repeated for each employee which is data redundency.
+
+Data Redundency
+---------------- 
+
+When same data is stored multiple time unnecessarly in Database. Redundency occurs when we try to keep
+all the data in a single table.
+
+Problems with data redundency:
+-------------------------------
+
+1. Insertion, updation, deletion anomalies
+2. Inconsistnecy of Database.
+3. Increase the Database table size and slow the performance while fetching the data.
+
+===============================1. Insertion, updation, deletion anomalies======================================	
+
+Insertion anomalies: => When certain data can not be inserted into the table without the presence of other data.
+
+Updation anomalies: => When we want to update a single piece of data, but is must be updated at all its copies.
+
+deletion anomalies: => If we delete some data, it cause deletion of some other data.
+
+Note : To solve the above problem we need to normalize(decompose) the table into multiple related tables.
+	 The main purpose of normalization is to avoid the data redundency and maximize the efficiency of the Database.
+
+==============================================Normalization=========================================================
+
+In Normalization we should split a table in multiple tables so that each table should contains a single idea/concept 
+and with the normalization we refine a big table into multiple related tables.
+
+for eg : The above table we should split into 2 tables:
+
+1. department
+2. employee
+
+To normaize a table we have different types of normal forms
+------------------------------------------------------------
+
+1. INF 
+2. 2NF 
+3. 3NF-----> upto 3NF data redundency is almost minimized or removed
+4. BCNF
+5. 4NF
+6. 5NF
+
+Note : Each normal form provides a different level of refinement of a Database.
+
+
+1. INF (First Normal Form)
+===========================
+
+** Table should not contains any multivalue attributes(comma/space seperated values)
+** Each cell should contains only atomic value
+** A table should not have the repeating columns.
+
+0NF or unnormalized table
+--------------------------
+
+EMPID     NAME      DEPT_NAME
+1         RAM       HR, SALES
+2         RAVI      Marketing
+3         AMIT      HR, Accounts
+
+Lets convert it into the INF (First Normal Form)
+
+solution1: valid solution
+__________________________
+
+EMPID     NAME     DEPT_NAME
+1         RAM      HR
+1         RAM      SALES
+2         RAVI     Marketing
+3         AMIT     HR
+3         AMIT     Accounts
+
+here empid,name and dept_name can not be primary key, here we need to take primary key as 
+composit primary key (empid,dept_name).
+
+solution2: invalid solution
+____________________________
+
+EMPID     NAME     DEPT_NAME1  	DEPT_NAME2   
+1         RAM      HR               SALES
+2         RAVI     Marketing        Null
+3         AMIT     HR               Accounts
+
+Note : The above solution is violates the 1NF because of repreating column.
+
+solution3: valid solution
+__________________________
+
+We can devide the table into 2 tables:
+
+1. as a base table
+2. as reference table
+
+1. emp table:
+
+EMPID    NAME
+1        RAM
+2        RAVI
+3        AMIT
+
+2. emp_dept table
+
+EMPID    DEPT_NAME     // here EMPID will be the Foreign Key
+ 1       HR
+ 1       SALES
+ 2       MARKETING
+ 3       HR
+ 3       ACCOUNTS 
+
+
+2. 2NF (Second Normal Form)
+===========================
+
+To understand the 2NF or to normalize a table in 2nd NF we need to understand following concepts:
+
+1. functional dependency
+2. super key
+3. candidate key
+4. prime attribute
+5. non-prime attribute
+
+Key:
+====
+
+Generally we keep data in  a table, so that later we can retrieve it easy manner. In a table all columns
+has a unique name but for a row we don't have a unique name. so inorder to find a row uniquly we required
+a key. So a key is an attribute or set of multiple attributes that uniquely identify a row/record in a table.
+
+for eg : Suppose we have to find ram in school.
+
+Multiple attribute are used to uniquely identify
+-------------------------------------------------
+
+ram + father_name + address + age
+
+2. super key
+------------
+
+All the valid combination of attributes by using we can find a row uniquely in a table.
+
+for eg : student(roll, name marks, address, dob, email)
+
+1. roll
+2. roll name  
+3. roll name address
+4. email
+5. name email
+6. name address
+7. name dob
+8. address email
+9. dob email
+
+3. candidate key
+-----------------
+
+It is a minimal set of super key.
+Note: A candidate key should not have a subset as another super key.
+
+1. roll 
+
+4. email
+
+6. name address  
+
+7. name dob
+
+Primary key
+____________
+
+Here from the cadidate key DBA will choose a Primary Key, generally it will be minimum number of 
+attribute declared as Primary Key. Some time we can make other than minimum value attribute also
+as a Primary Key (composit key).
+
+4. prime attribute
+-------------------
+
+Those attribute that are a part of any candidate key is called prime attribute.
+
+5. non-prime attribute
+----------------------
+
+Those attribute which are not part of any candidate key is known as non-prime attribute.
+
+In the above example : marks will be a non-prime attribute.
+
+Impotant
+=========
+
+1NF(First Normal Form) does not eliminate redundency, 
+
+2NF (Second Normal Form) applies in a table which is having a composit key, i.e a table with
+a Primary Key compound with two or more attribute.
+
+Note : A table with a single column Primary Key is automatically in 2NF (Second Normal Form).
+
+To be in 2NF (Second Normal Form) , a table must be in 1NF(First Normal Form) and the table 
+must not contains any partial dependency.
+
+partial dependency
+-------------------
+
+If the proper subset of a candidate key determines non-prime attribute, then it is called partial dependency.
+The normalization of 1NF(First Normal Form) table to the 2NF (Second Normal Form) involves the removal of
+partial dependency.
+
+If any partial dependency exist, we remove the partial dependecy attribute from the table by placing them
+in a new table.
+
+for eg:
+
+ROLL    CID      FEE
+
+1       c1       1000
+2       c2       1500
+1       c3       2000 
+3       c4       1000
+3       c1       1000
+2       c5       2000
+
+Here there are many courses having same fee. So, there will be only one Candidate key(roll and cid) that can
+uniquley indentify the record.
+
+prime attribute:(roll and cid)
+non-prime attribute (fee)
+
+Note : Here fee is dependent on the CID, which is the example of Partial Dependency. because CID is a proper 
+subset of candidate key the above table is not in 2NF (Second Normal Form).
+ 
+Lets convert it into the 2NF (Second Normal Form)
+--------------------------------------------------
+
+table 1: (roll, cid)
+
+table 2: (cid, fee)
+
+3. 3NF (Third Normal Form)
+=============================
+
+Although 2NF (Second Normal Form) relations have less redundencies than those in 1NF (First Normal Form) still
+have a chance of data redundency because of transitive dependency. In order to make a table in 
+3NF (Third Normal Form) we need to remove transitive dependency from the table.
+
+A relation will be in 3NF (Third Normal Form)
+----------------------------------------------
+
+1. It should be in 2NF (Second Normal Form).
+
+2. There should not be any transitive dependency.
+
+Transitive Dependency
+======================
+
+If a non-prime attribute is transitivly dependent on primary key.
+
+for eg:
+
+if A ------> B and B-------> C then A----> C is called transitivly dependent.
+
+for eg:
+
+Roll      Name    Age        Country      State
+
+1         RAM      25        INDIA         MP
+2         RAM      35        INDIA         UP
+3         RAVI     28        INDIA         MAHARASTRA
+
+
+Functional dependencies
+=======================
+
+roll----> name
+roll----> Age
+roll----> State
+State ----> Country
+
+Here the candidate key will be (roll)
+
+Roll ---> State and State ----> Country  // so Country is transitivly dependent on Roll , and it will violates 3NF.
+
+Note : To convert this relation in 3NF (Third Normal Form) we need to decompose this relation in multiple related tables:
+
+Student(roll, name, age, state)
+
+State_Country(state, country)
+
+Transaction management:
+=======================
+
+Transaction:
+------------
+
+It is a set of related operations used to perform a logical unit of work.
+
+for eg:
+
+** Withdrawing money from the ATM
+** Transfering amount from one account to another.
+
+Transaction access data using read and write operations. If a Transaction fails it should not be resumed,
+instead it should be restarted.
+
+In sql to manage the transaction we need to use TCL(Transaction controll language)
+
+** rollback
+** commit
+** savepoint
+
+In order to maintain consistancy in Database , before and after the tx certain properties should be followd 
+these are called ACID properties:
+
+1. (Atomicity) : (All or noting rule) the entire tx takes place at once or does not happens at all.
+
+2. Consistancy: the DB must be consistant before and after tx
+
+3. Isoloation: multiple tx should occurs independently at a time without any interference.
+
+4. Durability: The changes of a sucessfull tx should be permanent even if system failure occurs.
+
+If we perform any DML operation on a table inside a tx area, that operation will be partically commited
+(it will be stored in the local copy) and any time we can rollback these operation but once we  do commit,
+then only it will be stored permanently.
+
+Note : In Mysql it is bydefault autocommit is enabled. In the Database all the DDL statements are by default
+commited.
+
+In mysql to disable the autocommit mode
+---------------------------------------
+
+mysql> set autocommit=0;
+Query OK, 0 rows affected (0.10 sec)
+
+To start the transaction area in mysql
+---------------------------------------
+
+mysql> start transaction;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from student1;
++------+---------+-------+
+| roll | name    | marks |
++------+---------+-------+
+|    1 | rishabh |   999 |
+|    2 | Mansi   |   870 |
+|    3 | Rajat   |   890 |
+|    4 | Kapil   |   740 |
+|    5 | Deepak  |   740 |
+|    6 | Shubham |   810 |
++------+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> delete from student1 where roll = 5;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from student1;
++------+---------+-------+
+| roll | name    | marks |
++------+---------+-------+
+|    1 | rishabh |   999 |
+|    2 | Mansi   |   870 |
+|    3 | Rajat   |   890 |
+|    4 | Kapil   |   740 |
+|    6 | Shubham |   810 |
++------+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> rollback;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from student1;
++------+---------+-------+
+| roll | name    | marks |
++------+---------+-------+
+|    1 | rishabh |   999 |
+|    2 | Mansi   |   870 |
+|    3 | Rajat   |   890 |
+|    4 | Kapil   |   740 |
+|    5 | Deepak  |   740 |
+|    6 | Shubham |   810 |
++------+---------+-------+
+6 rows in set (0.00 sec)
+
+mysql> delete from student1 where roll = 5;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> commit;
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> rollback;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from student1;
++------+---------+-------+
+| roll | name    | marks |
++------+---------+-------+
+|    1 | rishabh |   999 |
+|    2 | Mansi   |   870 |
+|    3 | Rajat   |   890 |
+|    4 | Kapil   |   740 |
+|    6 | Shubham |   810 |
++------+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> savepoint p1;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> delete from student1 where roll = 2;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> delete from student1 where roll = 3;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> delete from student1 where roll = 4;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> delete from student1 where roll = 6;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from student1;
++------+---------+-------+
+| roll | name    | marks |
++------+---------+-------+
+|    1 | rishabh |   999 |
++------+---------+-------+
+1 row in set (0.00 sec)
+
+mysql> rollback to p1;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select * from student1;
++------+---------+-------+
+| roll | name    | marks |
++------+---------+-------+
+|    1 | rishabh |   999 |
+|    2 | Mansi   |   870 |
+|    3 | Rajat   |   890 |
+|    4 | Kapil   |   740 |
+|    6 | Shubham |   810 |
++------+---------+-------+
+5 rows in set (0.00 sec)

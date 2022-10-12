@@ -1,0 +1,63 @@
+=========================================JDBC========================================
+
+** connection
+** insert the data
+** get the data 
+
+PreparedStatement
+ResultSet
+
+DAO pattern : Data Access Object
+
+create table student
+(
+roll int primary key auto_increment,
+name varchar(12),
+marks int,
+email varchar(15),
+password varchar(10)
+);
+
+
+create table course
+(
+cid int primary key auto_increment,
+cname varchar(12),
+fee int
+);
+
+
+create table course_student
+(
+cid int,
+roll int,
+foreign key (cid) references course(cid),
+foreign key (roll) references student(roll)
+);
+
+
+select s.roll, s.name,s.email, c.cname, c.fee from  student s INNER JOIN course c INNER JOIN course_student cs ON s.roll = cs.roll AND c.cid = cs.cid AND c.cname= ?;
+
+===================================Hint : Console Based Application==================================
+
+
+Welcome to Student Registeration system
+
+1 . Login As Admin 
+
+2. Login As Student
+
+3. New Student ? Register..!
+
+
+1.
+
+Enter Admin username
+--
+Enter Admin password
+--
+
+enter 1 : add a new Course
+enter 2 : update the existing course
+enrer 3 : delete a course
+enter 4 : exit
